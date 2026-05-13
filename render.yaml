@@ -1,0 +1,24 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Deploy by going to https://dashboard.render.com/blueprints, "New Blueprint",
+# pick the GitHub repo, Render reads this file and creates the service.
+
+services:
+  - type: web
+    name: dexkepo-api
+    env: docker
+    plan: free
+    region: frankfurt        # near Neon eu-central-1
+    rootDir: .               # build context = repo root (so workspaces + shared/ reachable)
+    dockerfilePath: ./api/Dockerfile
+    dockerContext: .
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: DATABASE_URL
+        sync: false          # set this in dashboard (secret)
+      - key: JWT_SECRET
+        sync: false          # set this in dashboard (secret)
