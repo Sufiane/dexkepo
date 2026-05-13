@@ -1,0 +1,14 @@
+{
+  "name": "dexkepo",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["api", "web", "shared"],
+  "scripts": {
+    "dev:api": "npm --workspace api run start:dev",
+    "dev:web": "npm --workspace web run dev",
+    "build:api": "npm --workspace api run build",
+    "build:web": "npm --workspace web run build",
+    "build:shared": "npm --workspace shared run build",
+    "typecheck": "npm --workspace shared run typecheck && npm --workspace api run typecheck && npm --workspace web run check"
+  }
+}

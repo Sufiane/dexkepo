@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  pseudo    String     @unique
+  email     String     @unique
+  password  String
+  createdAt DateTime   @default(now())
+  dex       DexEntry[]
+}
+
+model Manhole {
+  manholeNo  String     @id
+  name       String
+  prefName   String
+  prefEnName String
+  city       String
+  address    String
+  lat        Float
+  lng        Float
+  pictureUrl String
+  pokemon    Json
+  dexEntries DexEntry[]
+}
+
+model DexEntry {
+  userId    String
+  manholeNo String
+  visitedAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  manhole   Manhole  @relation(fields: [manholeNo], references: [manholeNo])
+
+  @@id([userId, manholeNo])
+  @@index([userId])
+}
