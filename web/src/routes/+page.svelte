@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createQuery, useQueryClient } from '@tanstack/svelte-query';
   import { derived } from 'svelte/store';
-  import type { Manhole } from '@dexkepo/shared';
+  import type { ManholeSummary } from '@dexkepo/shared';
   import { listManholes } from '$lib/api/manholes';
   import { listDex } from '$lib/api/dex';
   import { auth } from '$lib/stores/auth';
@@ -12,7 +12,7 @@
 
   const qc = useQueryClient();
 
-  const manholesQ = createQuery<Manhole[]>({
+  const manholesQ = createQuery<ManholeSummary[]>({
     queryKey: ['manholes'],
     queryFn: listManholes
   });
@@ -29,7 +29,7 @@
     qc.invalidateQueries({ queryKey: ['dex'] });
   });
 
-  let selected: Manhole | null = $state(null);
+  let selected: ManholeSummary | null = $state(null);
 
   const all = $derived($manholesQ.data ?? []);
   const visitedSet = $derived(new Set(($dexQ.data ?? []).map((e) => e.manholeNo)));
@@ -71,12 +71,16 @@
         onSelect={(m) => (selected = m)}
       />
       {#if selected}
-        <ManholePanel
-          manhole={selected}
-          visited={visitedSet.has(selected.manholeNo)}
-          onClose={() => (selected = null)}
-          onToggle={handleToggle}
-        />
+        {#key selected.manholeNo}
+          <ManholePanel
+            manholeNo={selected.manholeNo}
+            name={selected.name}
+            prefEnName={selected.prefEnName}
+            visited={visitedSet.has(selected.manholeNo)}
+            onClose={() => (selected = null)}
+            onToggle={handleToggle}
+          />
+        {/key}
       {/if}
     </div>
   {/if}

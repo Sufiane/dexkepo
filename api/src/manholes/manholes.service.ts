@@ -9,6 +9,13 @@ export class ManholesService {
     return this.prisma.manhole.findMany({
       where: pref ? { prefEnName: pref } : undefined,
       orderBy: { manholeNo: 'asc' },
+      select: {
+        manholeNo: true,
+        name: true,
+        prefEnName: true,
+        lat: true,
+        lng: true,
+      },
     });
   }
 

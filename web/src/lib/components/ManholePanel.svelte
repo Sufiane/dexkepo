@@ -1,18 +1,30 @@
 <script lang="ts">
-  import type { Manhole } from '@dexkepo/shared';
+  import { createQuery } from '@tanstack/svelte-query';
   import { auth } from '../stores/auth';
   import { markVisited, unmarkVisited } from '../api/dex';
+  import { getManhole } from '../api/manholes';
 
   const PIC_BASE = 'https://local.pokemon.co.jp';
 
   type Props = {
-    manhole: Manhole;
+    manholeNo: string;
+    name: string;       // shown immediately from summary
+    prefEnName: string; // shown immediately from summary
     visited: boolean;
     onClose: () => void;
     onToggle: () => void; // called after a successful mark/unmark
   };
 
-  let { manhole, visited, onClose, onToggle }: Props = $props();
+  let { manholeNo, name, prefEnName, visited, onClose, onToggle }: Props = $props();
+
+  // Parent must wrap us in {#key manholeNo} so this component re-mounts
+  // when a different manhole is selected. That makes this query re-init.
+  const detailQ = createQuery({
+    queryKey: ['manhole', manholeNo],
+    queryFn: () => getManhole(manholeNo),
+    staleTime: 5 * 60_000
+  });
+
   let busy = $state(false);
   let error: string | null = $state(null);
 
@@ -21,8 +33,8 @@
     busy = true;
     error = null;
     try {
-      if (visited) await unmarkVisited(manhole.manholeNo);
-      else await markVisited(manhole.manholeNo);
+      if (visited) await unmarkVisited(manholeNo);
+      else await markVisited(manholeNo);
       onToggle();
     } catch (e) {
       error = (e as Error).message;
@@ -38,33 +50,42 @@
 >
   <div class="flex items-start justify-between">
     <div>
-      <h2 class="text-lg font-bold">#{manhole.manholeNo} · {manhole.name}</h2>
-      <p class="text-sm text-slate-600">{manhole.prefName}{manhole.city ? ` · ${manhole.city}` : ''}</p>
+      <h2 class="text-lg font-bold">#{manholeNo} · {name}</h2>
+      <p class="text-sm text-slate-600">
+        {prefEnName}{$detailQ.data?.city ? ` · ${$detailQ.data.city}` : ''}
+      </p>
     </div>
     <button class="text-slate-500 hover:text-slate-800" onclick={onClose} aria-label="close">✕</button>
   </div>
 
-  {#if manhole.pictureUrl}
-    <img
-      src={PIC_BASE + manhole.pictureUrl}
-      alt={manhole.name}
-      class="mt-3 w-full rounded-lg bg-slate-100 object-contain"
-      onerror={(e) => ((e.currentTarget as HTMLImageElement).style.display = 'none')}
-    />
-  {/if}
+  {#if $detailQ.isLoading}
+    <p class="mt-3 text-sm text-slate-500">Loading details…</p>
+  {:else if $detailQ.isError}
+    <p class="mt-3 text-sm text-red-600">Failed to load: {($detailQ.error as Error).message}</p>
+  {:else if $detailQ.data}
+    {@const m = $detailQ.data}
+    {#if m.pictureUrl}
+      <img
+        src={PIC_BASE + m.pictureUrl}
+        alt={m.name}
+        class="mt-3 w-full rounded-lg bg-slate-100 object-contain"
+        onerror={(e) => ((e.currentTarget as HTMLImageElement).style.display = 'none')}
+      />
+    {/if}
 
-  {#if manhole.address}
-    <p class="mt-2 text-sm text-slate-700">{manhole.address}</p>
-  {/if}
+    {#if m.address}
+      <p class="mt-2 text-sm text-slate-700">{m.address}</p>
+    {/if}
 
-  <div class="mt-3">
-    <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Pokemon</p>
-    <ul class="mt-1 flex flex-wrap gap-1">
-      {#each manhole.pokemon ?? [] as p}
-        <li class="rounded-full bg-slate-100 px-2 py-0.5 text-xs">{p.name}</li>
-      {/each}
-    </ul>
-  </div>
+    <div class="mt-3">
+      <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Pokemon</p>
+      <ul class="mt-1 flex flex-wrap gap-1">
+        {#each m.pokemon ?? [] as p}
+          <li class="rounded-full bg-slate-100 px-2 py-0.5 text-xs">{p.name}</li>
+        {/each}
+      </ul>
+    </div>
+  {/if}
 
   <div class="mt-4">
     {#if $auth}

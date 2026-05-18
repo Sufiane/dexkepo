@@ -2,15 +2,15 @@
   import { onMount, onDestroy } from 'svelte';
   import L from 'leaflet';
   import 'leaflet.markercluster';
-  import type { Manhole } from '@dexkepo/shared';
+  import type { ManholeSummary } from '@dexkepo/shared';
   import { visitedIcon, unvisitedIcon, clusterIcon } from './markerIcons';
 
   type Props = {
-    manholes: Manhole[];
+    manholes: ManholeSummary[];
     visitedSet: Set<string>;
     showVisited: boolean;
     showUnvisited: boolean;
-    onSelect: (m: Manhole) => void;
+    onSelect: (m: ManholeSummary) => void;
   };
 
   let { manholes, visitedSet, showVisited, showUnvisited, onSelect }: Props = $props();
