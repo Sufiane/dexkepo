@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 # Build context: repo root (so workspaces + shared/ are reachable)
-# Build from repo root:   docker build -f api/Dockerfile -t dexkepo-api .
+# Build from repo root:   docker build -t dexkepo-api .
 
 ############################
 # Stage 1 — install deps
