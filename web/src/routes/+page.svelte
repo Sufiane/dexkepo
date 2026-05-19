@@ -76,6 +76,7 @@
             manholeNo={selected.manholeNo}
             name={selected.name}
             prefEnName={selected.prefEnName}
+            pictureUrl={selected.pictureUrl}
             visited={visitedSet.has(selected.manholeNo)}
             onClose={() => (selected = null)}
             onToggle={handleToggle}

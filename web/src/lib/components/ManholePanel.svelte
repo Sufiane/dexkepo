@@ -4,18 +4,19 @@
   import { markVisited, unmarkVisited } from '../api/dex';
   import { getManhole } from '../api/manholes';
 
-  const PIC_BASE = 'https://local.pokemon.co.jp';
+  const PIC_BASE = 'https://local.pokemon.jp';
 
   type Props = {
     manholeNo: string;
-    name: string;       // shown immediately from summary
-    prefEnName: string; // shown immediately from summary
+    name: string;        // shown immediately from summary
+    prefEnName: string;  // shown immediately from summary
+    pictureUrl: string;  // shown immediately from summary
     visited: boolean;
     onClose: () => void;
     onToggle: () => void; // called after a successful mark/unmark
   };
 
-  let { manholeNo, name, prefEnName, visited, onClose, onToggle }: Props = $props();
+  let { manholeNo, name, prefEnName, pictureUrl, visited, onClose, onToggle }: Props = $props();
 
   // Parent must wrap us in {#key manholeNo} so this component re-mounts
   // when a different manhole is selected. That makes this query re-init.
@@ -58,21 +59,21 @@
     <button class="text-slate-500 hover:text-slate-800" onclick={onClose} aria-label="close">✕</button>
   </div>
 
+  {#if pictureUrl}
+    <img
+      src={PIC_BASE + pictureUrl}
+      alt={name}
+      class="mt-3 w-full rounded-lg bg-slate-100 object-contain"
+      onerror={(e) => ((e.currentTarget as HTMLImageElement).style.display = 'none')}
+    />
+  {/if}
+
   {#if $detailQ.isLoading}
     <p class="mt-3 text-sm text-slate-500">Loading details…</p>
   {:else if $detailQ.isError}
     <p class="mt-3 text-sm text-red-600">Failed to load: {($detailQ.error as Error).message}</p>
   {:else if $detailQ.data}
     {@const m = $detailQ.data}
-    {#if m.pictureUrl}
-      <img
-        src={PIC_BASE + m.pictureUrl}
-        alt={m.name}
-        class="mt-3 w-full rounded-lg bg-slate-100 object-contain"
-        onerror={(e) => ((e.currentTarget as HTMLImageElement).style.display = 'none')}
-      />
-    {/if}
-
     {#if m.address}
       <p class="mt-2 text-sm text-slate-700">{m.address}</p>
     {/if}

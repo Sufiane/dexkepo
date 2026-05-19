@@ -15,6 +15,7 @@ export class ManholesService {
         prefEnName: true,
         lat: true,
         lng: true,
+        pictureUrl: true,
       },
     });
   }
