@@ -3,7 +3,7 @@
   import L from 'leaflet';
   import 'leaflet.markercluster';
   import type { ManholeSummary } from '@dexkepo/shared';
-  import { visitedIcon, unvisitedIcon, clusterIcon } from './markerIcons';
+  import { buildMarkerIcon, clusterIcon } from './markerIcons';
 
   type Props = {
     manholes: ManholeSummary[];
@@ -61,24 +61,46 @@
   });
 
   function refresh() {
-    if (!map || !visitedLayer || !unvisitedLayer) return;
+    if (!map || !visitedLayer || !unvisitedLayer) {
+      return;
+    }
+
     visitedLayer.clearLayers();
     unvisitedLayer.clearLayers();
 
     const bounds: L.LatLngTuple[] = [];
-    for (const m of manholes) {
-      const visited = visitedSet.has(m.manholeNo);
-      const marker = L.marker([m.lat, m.lng], { icon: visited ? visitedIcon : unvisitedIcon });
-      marker.on('click', () => onSelect(m));
-      if (visited) visitedLayer.addLayer(marker);
-      else unvisitedLayer.addLayer(marker);
-      bounds.push([m.lat, m.lng]);
+
+    for (const manhole of manholes) {
+      const visited = visitedSet.has(manhole.manholeNo);
+      const marker = L.marker([manhole.lat, manhole.lng], {
+        icon: buildMarkerIcon({
+          pokemonNames: manhole.pokemonNames,
+          visited,
+        }),
+      });
+
+      marker.on('click', () => onSelect(manhole));
+
+      if (visited) {
+        visitedLayer.addLayer(marker);
+      } else {
+        unvisitedLayer.addLayer(marker);
+      }
+
+      bounds.push([manhole.lat, manhole.lng]);
     }
 
-    if (showVisited) visitedLayer.addTo(map);
-    else map.removeLayer(visitedLayer);
-    if (showUnvisited) unvisitedLayer.addTo(map);
-    else map.removeLayer(unvisitedLayer);
+    if (showVisited) {
+      visitedLayer.addTo(map);
+    } else {
+      map.removeLayer(visitedLayer);
+    }
+
+    if (showUnvisited) {
+      unvisitedLayer.addTo(map);
+    } else {
+      map.removeLayer(unvisitedLayer);
+    }
 
     if (bounds.length && map.getZoom() === 5) {
       map.fitBounds(bounds as any, { padding: [40, 40] });
@@ -91,7 +113,10 @@
     void visitedSet;
     void showVisited;
     void showUnvisited;
-    if (mounted) refresh();
+
+    if (mounted) {
+      refresh();
+    }
   });
 </script>
 

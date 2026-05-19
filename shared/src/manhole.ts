@@ -18,7 +18,8 @@ export type Manhole = {
 
 // Slim shape returned by GET /manholes (list). Drop heavy fields so the
 // payload for 470 rows stays small enough for tight-RAM hosts to buffer.
-// pictureUrl is included so the popup can show the cover image instantly
+// pictureUrl + pokemonNames are included so the map markers can render
+// pokemon sprites and the popup can show the cover image instantly,
 // without waiting for the /manholes/:no detail fetch.
 export type ManholeSummary = {
   manholeNo: string;
@@ -27,4 +28,5 @@ export type ManholeSummary = {
   lat: number;
   lng: number;
   pictureUrl: string;
+  pokemonNames: string[];
 };

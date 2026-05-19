@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { Manhole } from '@prisma/client';
+import { ManholeSummary } from '@dexkepo/shared';
 import { ManholesService } from './manholes.service';
-import { ManholeSummary } from './manholes.db';
 
 @Controller('manholes')
 export class ManholesController {

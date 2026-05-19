@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { Manhole } from '@prisma/client';
+import { Manhole, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
-export type ManholeSummary = Pick<
+/**
+ * Raw Prisma select shape for the list endpoint. The service transforms this
+ * into the public ManholeSummary contract.
+ */
+export type ManholeListRow = Pick<
   Manhole,
-  'manholeNo' | 'name' | 'prefEnName' | 'lat' | 'lng' | 'pictureUrl'
+  'manholeNo' | 'name' | 'prefEnName' | 'lat' | 'lng' | 'pictureUrl' | 'pokemon'
 >;
 
 /**
@@ -15,10 +19,10 @@ export type ManholeSummary = Pick<
 export class ManholesDb {
   constructor(private prisma: PrismaService) {}
 
-  findAll(pref?: string): Promise<ManholeSummary[]> {
+  findAll(pref?: string): Promise<ManholeListRow[]> {
     return this.prisma.manhole.findMany({
       where: pref ? { prefEnName: pref } : undefined,
-      orderBy: { manholeNo: 'asc' },
+      orderBy: { manholeNo: Prisma.SortOrder.asc },
       select: {
         manholeNo: true,
         name: true,
@@ -26,6 +30,7 @@ export class ManholesDb {
         lat: true,
         lng: true,
         pictureUrl: true,
+        pokemon: true,
       },
     });
   }
