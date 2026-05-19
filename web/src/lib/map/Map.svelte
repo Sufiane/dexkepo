@@ -38,11 +38,15 @@
       showCoverageOnHover: false
     });
     mounted = true;
-    refresh();
 
-    // Flex parents resolve height after first paint. Force Leaflet to
-    // re-measure or it'll stay in a 0×0 box and only render a tiny patch.
-    requestAnimationFrame(() => map?.invalidateSize());
+    // CRITICAL: at this point the flex parent might still be sizing.
+    // We must invalidateSize BEFORE refresh(), otherwise fitBounds runs
+    // against a 0×0 box, picks a worldwide zoom level, and loads tiles
+    // for huge areas that never get re-requested when the container grows.
+    requestAnimationFrame(() => {
+      map?.invalidateSize();
+      refresh();
+    });
 
     // Handle viewport resize / parent layout changes.
     resizeObs = new ResizeObserver(() => map?.invalidateSize());
