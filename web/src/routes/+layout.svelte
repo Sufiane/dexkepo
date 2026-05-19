@@ -15,7 +15,7 @@
 <QueryClientProvider client={client}>
   <div class="flex h-dvh w-screen flex-col overflow-hidden">
     <Header />
-    <main class="min-h-0 flex-1 overflow-hidden">
+    <main class="relative min-h-0 flex-1 overflow-hidden">
       {@render children?.()}
     </main>
   </div>

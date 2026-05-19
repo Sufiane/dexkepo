@@ -49,7 +49,7 @@
   }
 </script>
 
-<div class="flex h-full flex-col md:flex-row">
+<div class="absolute inset-0 flex flex-col md:flex-row">
   {#if $manholesQ.isLoading}
     <div class="flex flex-1 items-center justify-center text-slate-500">Loading map…</div>
   {:else if $manholesQ.isError}
