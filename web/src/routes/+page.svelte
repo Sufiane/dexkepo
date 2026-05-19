@@ -1,6 +1,5 @@
 <script lang="ts">
   import { createQuery, useQueryClient } from '@tanstack/svelte-query';
-  import { derived } from 'svelte/store';
   import type { ManholeSummary } from '@dexkepo/shared';
   import { listManholes } from '$lib/api/manholes';
   import { listDex } from '$lib/api/dex';
@@ -10,42 +9,56 @@
   import FilterBar from '$lib/components/FilterBar.svelte';
   import ManholePanel from '$lib/components/ManholePanel.svelte';
 
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
 
   const manholesQ = createQuery<ManholeSummary[]>({
     queryKey: ['manholes'],
-    queryFn: listManholes
+    queryFn: listManholes,
   });
 
   const dexQ = createQuery({
     queryKey: ['dex'],
     queryFn: listDex,
-    enabled: !!$auth
+    enabled: !!$auth,
   });
 
   // Refetch dex when auth changes
   $effect(() => {
     void $auth;
-    qc.invalidateQueries({ queryKey: ['dex'] });
+    queryClient.invalidateQueries({ queryKey: ['dex'] });
   });
 
   let selected: ManholeSummary | null = $state(null);
+  let justToggledNo: string | null = $state(null);
 
   const all = $derived($manholesQ.data ?? []);
-  const visitedSet = $derived(new Set(($dexQ.data ?? []).map((e) => e.manholeNo)));
+  const visitedSet = $derived(
+    new Set(($dexQ.data ?? []).map((entry) => entry.manholeNo)),
+  );
 
   const prefectures = $derived(
-    Array.from(new Set(all.map((m) => m.prefEnName))).sort()
+    Array.from(new Set(all.map((manhole) => manhole.prefEnName))).sort(),
   );
 
   const filtered = $derived(
-    all.filter((m) =>
-      $filters.prefectures.length === 0 || $filters.prefectures.includes(m.prefEnName)
-    )
+    all.filter(
+      (manhole) =>
+        $filters.prefectures.length === 0 ||
+        $filters.prefectures.includes(manhole.prefEnName),
+    ),
   );
 
-  function handleToggle() {
-    qc.invalidateQueries({ queryKey: ['dex'] });
+  function handleToggle(manholeNo: string): void {
+    queryClient.invalidateQueries({ queryKey: ['dex'] });
+
+    // Trigger the pop animation on the just-toggled marker, then clear so
+    // re-renders don't keep replaying it.
+    justToggledNo = manholeNo;
+    setTimeout(() => {
+      if (justToggledNo === manholeNo) {
+        justToggledNo = null;
+      }
+    }, 700);
   }
 </script>
 
@@ -68,7 +81,8 @@
         visitedSet={visitedSet}
         showVisited={$filters.showVisited}
         showUnvisited={$filters.showUnvisited}
-        onSelect={(m) => (selected = m)}
+        justToggledNo={justToggledNo}
+        onSelect={(manhole) => (selected = manhole)}
       />
       {#if selected}
         {#key selected.manholeNo}
@@ -77,9 +91,10 @@
             name={selected.name}
             prefEnName={selected.prefEnName}
             pictureUrl={selected.pictureUrl}
+            pokemonNames={selected.pokemonNames}
             visited={visitedSet.has(selected.manholeNo)}
             onClose={() => (selected = null)}
-            onToggle={handleToggle}
+            onToggle={() => handleToggle(selected!.manholeNo)}
           />
         {/key}
       {/if}

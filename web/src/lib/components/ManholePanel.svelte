@@ -1,44 +1,86 @@
 <script lang="ts">
   import { createQuery } from '@tanstack/svelte-query';
+  import confetti from 'canvas-confetti';
   import { auth } from '../stores/auth';
   import { markVisited, unmarkVisited } from '../api/dex';
   import { getManhole } from '../api/manholes';
+  import { spriteUrl } from '../utils/pokemonSprite';
 
   const PIC_BASE = 'https://local.pokemon.jp';
 
   type Props = {
     manholeNo: string;
-    name: string;        // shown immediately from summary
-    prefEnName: string;  // shown immediately from summary
-    pictureUrl: string;  // shown immediately from summary
+    name: string;
+    prefEnName: string;
+    pictureUrl: string;
+    pokemonNames: string[];
     visited: boolean;
     onClose: () => void;
-    onToggle: () => void; // called after a successful mark/unmark
+    onToggle: () => void;
   };
 
-  let { manholeNo, name, prefEnName, pictureUrl, visited, onClose, onToggle }: Props = $props();
+  let {
+    manholeNo,
+    name,
+    prefEnName,
+    pictureUrl,
+    pokemonNames,
+    visited,
+    onClose,
+    onToggle,
+  }: Props = $props();
 
-  // Parent must wrap us in {#key manholeNo} so this component re-mounts
-  // when a different manhole is selected. That makes this query re-init.
   const detailQ = createQuery({
     queryKey: ['manhole', manholeNo],
     queryFn: () => getManhole(manholeNo),
-    staleTime: 5 * 60_000
+    staleTime: 5 * 60_000,
   });
 
   let busy = $state(false);
   let error: string | null = $state(null);
+  let lightboxOpen = $state(false);
+  let buttonEl: HTMLButtonElement | null = $state(null);
 
-  async function toggle() {
-    if (!$auth) return;
+  function fireConfetti(): void {
+    if (!buttonEl) {
+      return;
+    }
+
+    const rect = buttonEl.getBoundingClientRect();
+    const origin = {
+      x: (rect.left + rect.width / 2) / window.innerWidth,
+      y: (rect.top + rect.height / 2) / window.innerHeight,
+    };
+
+    confetti({
+      particleCount: 80,
+      spread: 70,
+      startVelocity: 35,
+      origin,
+      colors: ['#16a34a', '#22c55e', '#fde047', '#f97316', '#ef4444'],
+      scalar: 0.9,
+    });
+  }
+
+  async function toggle(): Promise<void> {
+    if (!$auth) {
+      return;
+    }
+
     busy = true;
     error = null;
+
     try {
-      if (visited) await unmarkVisited(manholeNo);
-      else await markVisited(manholeNo);
+      if (visited) {
+        await unmarkVisited(manholeNo);
+      } else {
+        await markVisited(manholeNo);
+        fireConfetti();
+      }
+
       onToggle();
-    } catch (e) {
-      error = (e as Error).message;
+    } catch (err) {
+      error = (err as Error).message;
     } finally {
       busy = false;
     }
@@ -46,67 +88,136 @@
 </script>
 
 <div
-  class="fixed bottom-0 left-0 right-0 z-[1000] max-h-[70vh] overflow-y-auto rounded-t-2xl bg-white p-4 shadow-2xl
-         md:bottom-auto md:left-auto md:right-4 md:top-20 md:max-h-[80vh] md:w-96 md:rounded-2xl"
+  class="dx-panel fixed bottom-0 left-0 right-0 z-[1000] max-h-[75vh] overflow-y-auto rounded-t-2xl bg-white p-4 shadow-2xl
+         md:bottom-auto md:left-auto md:right-4 md:top-20 md:max-h-[80vh] md:w-[28rem] md:rounded-2xl"
 >
-  <div class="flex items-start justify-between">
-    <div>
-      <h2 class="text-lg font-bold">#{manholeNo} · {name}</h2>
-      <p class="text-sm text-slate-600">
-        {prefEnName}{$detailQ.data?.city ? ` · ${$detailQ.data.city}` : ''}
+  <div class="flex items-start justify-between gap-3">
+    <div class="flex-1">
+      <p class="text-xs font-bold uppercase tracking-widest text-rose-500">
+        #{manholeNo}
+        <span class="ml-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700">
+          {prefEnName}
+        </span>
       </p>
+      <h2 class="mt-1 text-xl font-extrabold leading-tight text-slate-900">
+        {name}
+      </h2>
+      {#if $detailQ.data?.city}
+        <p class="text-sm text-slate-600">{$detailQ.data.city}</p>
+      {/if}
     </div>
-    <button class="text-slate-500 hover:text-slate-800" onclick={onClose} aria-label="close">✕</button>
+    <button
+      class="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+      onclick={onClose}
+      aria-label="close"
+    >
+      <svg viewBox="0 0 20 20" class="h-5 w-5" fill="currentColor">
+        <path d="M5.28 4.22a.75.75 0 00-1.06 1.06L8.94 10l-4.72 4.72a.75.75 0 101.06 1.06L10 11.06l4.72 4.72a.75.75 0 101.06-1.06L11.06 10l4.72-4.72a.75.75 0 00-1.06-1.06L10 8.94 5.28 4.22z" />
+      </svg>
+    </button>
   </div>
 
   {#if pictureUrl}
-    <img
-      src={PIC_BASE + pictureUrl}
-      alt={name}
-      class="mt-3 w-full rounded-lg bg-slate-100 object-contain"
-      onerror={(e) => ((e.currentTarget as HTMLImageElement).style.display = 'none')}
-    />
+    <button
+      type="button"
+      onclick={() => (lightboxOpen = true)}
+      class="mt-3 block w-full overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200 transition hover:ring-rose-300"
+      aria-label="View cover full-size"
+    >
+      <img
+        src={PIC_BASE + pictureUrl}
+        alt={name}
+        class="aspect-square w-full object-contain"
+        onerror={(e) => ((e.currentTarget as HTMLImageElement).style.display = 'none')}
+      />
+    </button>
+  {/if}
+
+  <!-- Pokemon featured: each as sprite + name chip -->
+  {#if pokemonNames.length}
+    <div class="mt-4">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+        Featured Pokémon
+      </p>
+      <ul class="mt-2 flex flex-wrap gap-2">
+        {#each pokemonNames as pokemonName}
+          <li
+            class="flex items-center gap-1.5 rounded-full bg-slate-100 py-1 pl-1 pr-3 text-sm font-medium text-slate-800"
+          >
+            <img
+              src={spriteUrl(pokemonName)}
+              alt=""
+              class="h-7 w-7 object-contain"
+              loading="lazy"
+              style="image-rendering: pixelated;"
+              onerror={(e) => ((e.currentTarget as HTMLImageElement).style.visibility = 'hidden')}
+            />
+            <span>{pokemonName}</span>
+          </li>
+        {/each}
+      </ul>
+    </div>
   {/if}
 
   {#if $detailQ.isLoading}
     <p class="mt-3 text-sm text-slate-500">Loading details…</p>
   {:else if $detailQ.isError}
     <p class="mt-3 text-sm text-red-600">Failed to load: {($detailQ.error as Error).message}</p>
-  {:else if $detailQ.data}
-    {@const m = $detailQ.data}
-    {#if m.address}
-      <p class="mt-2 text-sm text-slate-700">{m.address}</p>
-    {/if}
-
-    <div class="mt-3">
-      <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Pokemon</p>
-      <ul class="mt-1 flex flex-wrap gap-1">
-        {#each m.pokemon ?? [] as p}
-          <li class="rounded-full bg-slate-100 px-2 py-0.5 text-xs">{p.name}</li>
-        {/each}
-      </ul>
-    </div>
+  {:else if $detailQ.data?.address}
+    <p class="mt-3 text-sm text-slate-600">
+      <span class="font-semibold text-slate-500">📍</span>
+      {$detailQ.data.address}
+    </p>
   {/if}
 
-  <div class="mt-4">
+  <div class="mt-5">
     {#if $auth}
       <button
-        class="w-full rounded-lg px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
-        class:bg-slate-700={visited}
+        bind:this={buttonEl}
+        class="dx-mark-btn flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-white shadow-md transition-all disabled:opacity-60"
+        class:bg-slate-600={visited}
         class:bg-green-600={!visited}
+        class:hover:bg-slate-700={visited}
+        class:hover:bg-green-700={!visited}
         disabled={busy}
         onclick={toggle}
       >
-        {busy ? '...' : visited ? 'Unmark visited' : 'Mark as visited'}
+        {#if busy}
+          <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          </svg>
+        {:else if visited}
+          ✓ Visited — tap to unmark
+        {:else}
+          Mark as visited
+        {/if}
       </button>
       {#if error}
-        <p class="mt-1 text-xs text-red-600">{error}</p>
+        <p class="mt-2 text-xs text-red-600">{error}</p>
       {/if}
     {:else}
       <a
         href="/register"
-        class="block w-full rounded-lg bg-slate-900 px-3 py-2 text-center text-sm font-semibold text-white"
-      >Sign up to track your dex</a>
+        class="block w-full rounded-xl bg-slate-900 px-4 py-3 text-center text-sm font-bold text-white shadow-md hover:bg-slate-800"
+      >
+        Sign up to track your dex
+      </a>
     {/if}
   </div>
 </div>
+
+{#if lightboxOpen && pictureUrl}
+  <button
+    type="button"
+    class="fixed inset-0 z-[2000] flex items-center justify-center bg-black/85 p-4"
+    onclick={() => (lightboxOpen = false)}
+    aria-label="Close image"
+  >
+    <img
+      src={PIC_BASE + pictureUrl}
+      alt={name}
+      class="max-h-[90vh] max-w-[90vw] rounded-xl object-contain shadow-2xl"
+    />
+  </button>
+{/if}

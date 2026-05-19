@@ -107,3 +107,31 @@ html, body {
 }
 .dx-cluster.visited { background: rgba(22, 163, 74, .92); }
 .dx-cluster.unvisited { background: rgba(71, 85, 105, .92); }
+
+/* "Just toggled" one-shot pop animation. Applied via a class on the marker
+   for ~600ms after the user marks/unmarks, then auto-removed. */
+.dx-marker.dx-pop {
+  animation: dx-pop .6s ease-out 1;
+}
+@keyframes dx-pop {
+  0%   { transform: scale(.4); }
+  55%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+/* --- Panel ------------------------------------------------------------- */
+
+.dx-panel {
+  animation: dx-panel-in .25s ease-out 1;
+}
+@keyframes dx-panel-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dx-mark-btn {
+  transform: translateZ(0);
+}
+.dx-mark-btn:active:not(:disabled) {
+  transform: scale(.97);
+}

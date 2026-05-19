@@ -10,10 +10,18 @@
     visitedSet: Set<string>;
     showVisited: boolean;
     showUnvisited: boolean;
+    justToggledNo: string | null;
     onSelect: (m: ManholeSummary) => void;
   };
 
-  let { manholes, visitedSet, showVisited, showUnvisited, onSelect }: Props = $props();
+  let {
+    manholes,
+    visitedSet,
+    showVisited,
+    showUnvisited,
+    justToggledNo,
+    onSelect,
+  }: Props = $props();
 
   let container: HTMLDivElement;
   let map: L.Map | null = null;
@@ -76,6 +84,7 @@
         icon: buildMarkerIcon({
           pokemonNames: manhole.pokemonNames,
           visited,
+          justToggled: manhole.manholeNo === justToggledNo,
         }),
       });
 
@@ -113,6 +122,7 @@
     void visitedSet;
     void showVisited;
     void showUnvisited;
+    void justToggledNo;
 
     if (mounted) {
       refresh();

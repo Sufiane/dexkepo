@@ -4,17 +4,20 @@ import { spriteUrl } from '../utils/pokemonSprite';
 type MarkerOptions = {
   pokemonNames: string[];
   visited: boolean;
+  justToggled?: boolean;
 };
 
 /**
  * Marker = circular crop of the first Pokemon's Showdown sprite, framed by
  * a colored ring that signals visited state.
  * If the cover features 2+ Pokemon, a "+N" badge sits in the bottom-right.
+ * If `justToggled` is true, the marker pops via a one-shot CSS animation.
  */
 export function buildMarkerIcon(options: MarkerOptions): L.DivIcon {
   const [first] = options.pokemonNames;
   const extra = options.pokemonNames.length - 1;
   const ringClass = options.visited ? 'dx-ring-visited' : 'dx-ring-unvisited';
+  const popClass = options.justToggled ? 'dx-pop' : '';
   const spriteSrc = first ? spriteUrl(first) : '';
   const spriteAlt = first ?? 'manhole';
 
@@ -23,7 +26,7 @@ export function buildMarkerIcon(options: MarkerOptions): L.DivIcon {
   return L.divIcon({
     className: '',
     html: `
-      <div class="dx-marker ${ringClass}">
+      <div class="dx-marker ${ringClass} ${popClass}">
         <img class="dx-sprite" src="${spriteSrc}" alt="${spriteAlt}" loading="lazy" />
         ${badge}
       </div>
