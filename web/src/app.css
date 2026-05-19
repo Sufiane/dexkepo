@@ -6,6 +6,19 @@
 @import 'leaflet.markercluster/dist/MarkerCluster.css';
 @import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
+/* Tailwind's preflight applies `img { max-width: 100%; height: auto }`.
+   Leaflet's tile/marker images need to keep their intrinsic sizes — undo it. */
+.leaflet-container img,
+.leaflet-container .leaflet-tile,
+.leaflet-container .leaflet-marker-icon,
+.leaflet-container .leaflet-marker-shadow,
+.leaflet-container .leaflet-image-layer,
+.leaflet-container .leaflet-tile-container {
+  max-width: none !important;
+  max-height: none !important;
+  height: auto;
+}
+
 html, body {
   height: 100%;
   margin: 0;
