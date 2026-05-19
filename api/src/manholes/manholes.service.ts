@@ -22,7 +22,11 @@ export class ManholesService {
 
   async one(manholeNo: string) {
     const m = await this.prisma.manhole.findUnique({ where: { manholeNo } });
-    if (!m) throw new NotFoundException();
+
+    if (!m) {
+      throw new NotFoundException();
+    }
+
     return m;
   }
 }

@@ -15,7 +15,11 @@ export class DexService {
 
   async mark(userId: string, manholeNo: string) {
     const m = await this.prisma.manhole.findUnique({ where: { manholeNo } });
-    if (!m) throw new NotFoundException('Manhole not found');
+
+    if (!m) {
+      throw new NotFoundException('Manhole not found');
+    }
+
     return this.prisma.dexEntry.upsert({
       where: { userId_manholeNo: { userId, manholeNo } },
       update: {},
