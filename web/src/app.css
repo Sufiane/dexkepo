@@ -6,7 +6,11 @@
 @import 'leaflet.markercluster/dist/MarkerCluster.css';
 @import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
-html, body, #app { height: 100%; }
+html, body {
+  height: 100%;
+  margin: 0;
+  background: #f8fafc; /* slate-50 — fallback in case Tailwind class on body misses */
+}
 
 .dx-marker-unvisited {
   width: 18px;

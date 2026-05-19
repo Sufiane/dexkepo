@@ -19,6 +19,7 @@
   let map: L.Map | null = null;
   let visitedLayer: L.MarkerClusterGroup | null = null;
   let unvisitedLayer: L.MarkerClusterGroup | null = null;
+  let resizeObs: ResizeObserver | null = null;
   let mounted = false;
 
   onMount(() => {
@@ -38,9 +39,19 @@
     });
     mounted = true;
     refresh();
+
+    // Flex parents resolve height after first paint. Force Leaflet to
+    // re-measure or it'll stay in a 0×0 box and only render a tiny patch.
+    requestAnimationFrame(() => map?.invalidateSize());
+
+    // Handle viewport resize / parent layout changes.
+    resizeObs = new ResizeObserver(() => map?.invalidateSize());
+    resizeObs.observe(container);
   });
 
   onDestroy(() => {
+    resizeObs?.disconnect();
+    resizeObs = null;
     map?.remove();
     map = null;
   });
@@ -80,4 +91,4 @@
   });
 </script>
 
-<div bind:this={container} class="h-full w-full"></div>
+<div bind:this={container} class="absolute inset-0"></div>

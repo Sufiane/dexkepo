@@ -13,9 +13,9 @@
 </script>
 
 <QueryClientProvider client={client}>
-  <div class="flex h-screen w-screen flex-col">
+  <div class="flex h-dvh w-screen flex-col overflow-hidden">
     <Header />
-    <main class="min-h-0 flex-1">
+    <main class="min-h-0 flex-1 overflow-hidden">
       {@render children?.()}
     </main>
   </div>
