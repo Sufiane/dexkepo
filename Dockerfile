@@ -5,7 +5,7 @@
 ############################
 # Stage 1 — install deps
 ############################
-FROM node:20-slim AS deps
+FROM node:24-slim AS deps
 WORKDIR /app
 
 # OpenSSL needed by Prisma engine on debian-slim
@@ -27,7 +27,7 @@ RUN npm ci
 ############################
 # Stage 2 — build api + shared
 ############################
-FROM node:20-slim AS build
+FROM node:24-slim AS build
 WORKDIR /app
 RUN apt-get update -y \
   && apt-get install -y --no-install-recommends openssl ca-certificates \
@@ -45,7 +45,7 @@ RUN npm run build
 ############################
 # Stage 3 — runtime
 ############################
-FROM node:20-slim AS runtime
+FROM node:24-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 RUN apt-get update -y \
