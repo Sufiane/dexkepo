@@ -1,19 +1,24 @@
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { AuthDb } from './auth.db';
+import { AuthDb, PublicUser } from './auth.db';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+
+export type AuthResponse = {
+  accessToken: string;
+  user: PublicUser;
+};
 
 @Injectable()
 export class AuthService {
   constructor(private db: AuthDb, private jwt: JwtService) {}
 
-  private sign(userId: string) {
+  private sign(userId: string): string {
     return this.jwt.sign({ sub: userId });
   }
 
-  async register(dto: RegisterDto) {
+  async register(dto: RegisterDto): Promise<AuthResponse> {
     const existing = await this.db.findByEmailOrPseudo(dto.email, dto.pseudo);
 
     if (existing) {
@@ -30,7 +35,7 @@ export class AuthService {
     return { accessToken: this.sign(user.id), user };
   }
 
-  async login(dto: LoginDto) {
+  async login(dto: LoginDto): Promise<AuthResponse> {
     const user = await this.db.findByEmail(dto.email);
 
     if (!user) {

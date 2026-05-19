@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+
+export type PublicUser = Pick<User, 'id' | 'pseudo' | 'email' | 'createdAt'>;
 
 /**
  * Data access for users + auth. The only file in this module that imports
@@ -10,21 +13,25 @@ import { PrismaService } from '../prisma/prisma.service';
 export class AuthDb {
   constructor(private prisma: PrismaService) {}
 
-  findByEmailOrPseudo(email: string, pseudo: string) {
+  findByEmailOrPseudo(email: string, pseudo: string): Promise<User | null> {
     return this.prisma.user.findFirst({
       where: { OR: [{ email }, { pseudo }] },
     });
   }
 
-  findByEmail(email: string) {
+  findByEmail(email: string): Promise<User | null> {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  findById(id: string) {
+  findById(id: string): Promise<User | null> {
     return this.prisma.user.findUnique({ where: { id } });
   }
 
-  createUser(input: { pseudo: string; email: string; passwordHash: string }) {
+  createUser(input: {
+    pseudo: string;
+    email: string;
+    passwordHash: string;
+  }): Promise<PublicUser> {
     return this.prisma.user.create({
       data: {
         pseudo: input.pseudo,

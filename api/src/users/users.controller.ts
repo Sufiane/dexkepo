@@ -6,7 +6,7 @@ import { AuthUser, CurrentUser } from '../common/current-user.decorator';
 export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  me(@CurrentUser() user: AuthUser) {
+  me(@CurrentUser() user: AuthUser): AuthUser {
     return user;
   }
 }
