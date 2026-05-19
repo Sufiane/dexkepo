@@ -1,27 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { ManholesDb } from './manholes.db';
 
 @Injectable()
 export class ManholesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private db: ManholesDb) {}
 
   list(pref?: string) {
-    return this.prisma.manhole.findMany({
-      where: pref ? { prefEnName: pref } : undefined,
-      orderBy: { manholeNo: 'asc' },
-      select: {
-        manholeNo: true,
-        name: true,
-        prefEnName: true,
-        lat: true,
-        lng: true,
-        pictureUrl: true,
-      },
-    });
+    return this.db.findAll(pref);
   }
 
   async one(manholeNo: string) {
-    const m = await this.prisma.manhole.findUnique({ where: { manholeNo } });
+    const m = await this.db.findOne(manholeNo);
 
     if (!m) {
       throw new NotFoundException();
