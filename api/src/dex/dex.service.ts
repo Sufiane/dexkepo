@@ -11,9 +11,9 @@ export class DexService {
   }
 
   async mark(userId: string, manholeNo: string): Promise<DexEntry> {
-    const m = await this.db.findManhole(manholeNo);
+    const manhole = await this.db.findManhole(manholeNo);
 
-    if (!m) {
+    if (!manhole) {
       throw new NotFoundException('Manhole not found');
     }
 

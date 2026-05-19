@@ -11,12 +11,12 @@ export class ManholesService {
   }
 
   async one(manholeNo: string): Promise<Manhole> {
-    const m = await this.db.findOne(manholeNo);
+    const manhole = await this.db.findOne(manholeNo);
 
-    if (!m) {
+    if (!manhole) {
       throw new NotFoundException();
     }
 
-    return m;
+    return manhole;
   }
 }

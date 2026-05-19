@@ -23,31 +23,31 @@ async function main() {
 
   console.log(`Seeding ${rows.length} manholes...`);
 
-  for (const m of rows) {
+  for (const manhole of rows) {
     await prisma.manhole.upsert({
-      where: { manholeNo: m.manhole_no },
+      where: { manholeNo: manhole.manhole_no },
       update: {
-        name: m.name,
-        prefName: m.pref_name,
-        prefEnName: m.pref_en_name,
-        city: m.city,
-        address: m.address,
-        lat: m.lat,
-        lng: m.lng,
-        pictureUrl: m.picture_url,
-        pokemon: m.pokemon_list as unknown as object,
+        name: manhole.name,
+        prefName: manhole.pref_name,
+        prefEnName: manhole.pref_en_name,
+        city: manhole.city,
+        address: manhole.address,
+        lat: manhole.lat,
+        lng: manhole.lng,
+        pictureUrl: manhole.picture_url,
+        pokemon: manhole.pokemon_list as unknown as object,
       },
       create: {
-        manholeNo: m.manhole_no,
-        name: m.name,
-        prefName: m.pref_name,
-        prefEnName: m.pref_en_name,
-        city: m.city,
-        address: m.address,
-        lat: m.lat,
-        lng: m.lng,
-        pictureUrl: m.picture_url,
-        pokemon: m.pokemon_list as unknown as object,
+        manholeNo: manhole.manhole_no,
+        name: manhole.name,
+        prefName: manhole.pref_name,
+        prefEnName: manhole.pref_en_name,
+        city: manhole.city,
+        address: manhole.address,
+        lat: manhole.lat,
+        lng: manhole.lng,
+        pictureUrl: manhole.picture_url,
+        pokemon: manhole.pokemon_list as unknown as object,
       },
     });
   }
@@ -56,8 +56,8 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
+  .catch((error) => {
+    console.error(error);
     process.exit(1);
   })
   .finally(() => prisma.$disconnect());
