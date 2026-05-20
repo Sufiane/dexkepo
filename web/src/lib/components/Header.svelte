@@ -1,5 +1,6 @@
 <script lang="ts">
   import { auth, logout } from '../stores/auth';
+  import { theme, toggleTheme } from '../stores/theme';
   import { goto } from '$app/navigation';
 
   function handleLogout(): void {
@@ -31,6 +32,25 @@
   </a>
 
   <nav class="flex items-center gap-3 text-sm">
+    <button
+      type="button"
+      onclick={toggleTheme}
+      class="rounded-full p-1.5 text-white/90 hover:bg-white/20"
+      aria-label={$theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      title={$theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+    >
+      {#if $theme === 'dark'}
+        <!-- Sun icon, shown in dark mode (click to switch back to light) -->
+        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true">
+          <path d="M12 18a6 6 0 100-12 6 6 0 000 12zM12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      {:else}
+        <!-- Moon icon, shown in light mode -->
+        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+        </svg>
+      {/if}
+    </button>
     {#if $auth}
       <a
         href="/me"

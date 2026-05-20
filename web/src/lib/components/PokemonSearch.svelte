@@ -65,7 +65,7 @@
         bind:value={query}
         onfocus={() => (focused = true)}
         onblur={() => setTimeout(() => (focused = false), 120)}
-        class="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 pr-8 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-200"
+        class="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 pr-8 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500"
       />
       {#if query || $filters.pokemonSearch}
         <button
@@ -84,14 +84,14 @@
 
   {#if focused && matches.length}
     <ul
-      class="absolute left-0 right-0 z-50 mt-1 max-h-72 overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg"
+      class="absolute left-0 right-0 z-50 mt-1 max-h-72 overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800"
     >
       {#each matches as suggestion}
         <li>
           <button
             type="button"
             onmousedown={() => pick(suggestion.name)}
-            class="flex w-full items-center gap-2 px-2 py-1.5 text-left text-sm hover:bg-rose-50"
+            class="flex w-full items-center gap-2 px-2 py-1.5 text-left text-sm hover:bg-rose-50 dark:hover:bg-slate-700"
           >
             <img
               src={spriteUrl(suggestion.name)}

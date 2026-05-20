@@ -31,6 +31,11 @@ html, body {
   height: 100%;
   margin: 0;
   background: #f8fafc; /* slate-50 — fallback in case Tailwind class on body misses */
+  color: #0f172a;       /* slate-900 */
+}
+html.dark, html.dark body {
+  background: #0f172a;  /* slate-900 */
+  color: #e2e8f0;       /* slate-200 */
 }
 
 /* --- Map markers ------------------------------------------------------- */

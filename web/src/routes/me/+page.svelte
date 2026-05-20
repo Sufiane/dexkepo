@@ -55,7 +55,10 @@
 </script>
 
 {#if $auth}
-  <div class="mx-auto mt-6 w-full max-w-4xl space-y-6 p-4">
+  <!-- `<main>` is overflow-hidden so the map page can fill it exactly.
+       Routes that need to scroll opt in with their own overflow-y-auto + h-full. -->
+  <div class="h-full overflow-y-auto">
+    <div class="mx-auto mt-6 w-full max-w-4xl space-y-6 p-4 pb-12">
     <!-- Hero -->
     <header class="rounded-3xl bg-gradient-to-br from-rose-500 via-red-500 to-orange-500 p-6 text-white shadow-lg">
       <p class="text-xs font-bold uppercase tracking-[.25em] text-white/85">Trainer</p>
@@ -85,7 +88,7 @@
     <!-- Achievements -->
     <section>
       <div class="flex items-baseline justify-between">
-        <h2 class="text-lg font-extrabold tracking-tight text-slate-900">Achievements</h2>
+        <h2 class="text-lg font-extrabold tracking-tight text-slate-900 dark:text-slate-100">Achievements</h2>
         <p class="text-sm tabular-nums text-slate-500">
           {achievements.filter((achievement) => achievement.unlocked).length} / {achievements.length}
         </p>
@@ -114,7 +117,7 @@
 
     <!-- Recent visits -->
     <section>
-      <h2 class="text-lg font-extrabold tracking-tight text-slate-900">
+      <h2 class="text-lg font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
         Recent visits
         <span class="ml-1 text-sm font-medium text-slate-500">({visited.length})</span>
       </h2>
@@ -126,7 +129,7 @@
           No visits yet. Open the map and mark some!
         </p>
       {:else}
-        <ul class="mt-2 divide-y divide-slate-200 overflow-hidden rounded-2xl bg-white shadow-sm">
+        <ul class="mt-2 divide-y divide-slate-200 overflow-hidden rounded-2xl bg-white shadow-sm dark:divide-slate-700 dark:bg-slate-800">
           {#each visited.slice(0, 25) as entry}
             <li class="flex items-center gap-3 p-3 text-sm">
               {#if entry.manhole.pictureUrl}
@@ -138,7 +141,7 @@
                 />
               {/if}
               <div class="min-w-0 flex-1">
-                <p class="truncate font-semibold text-slate-900">
+                <p class="truncate font-semibold text-slate-900 dark:text-slate-100">
                   #{entry.manholeNo} · {entry.manhole.name}
                 </p>
                 <p class="truncate text-xs text-slate-500">
@@ -158,5 +161,6 @@
         {/if}
       {/if}
     </section>
+    </div>
   </div>
 {/if}

@@ -31,15 +31,11 @@
 </script>
 
 <div
-  class="group relative flex flex-col items-center rounded-2xl border p-3 text-center transition"
-  class:border-amber-300={achievement.unlocked}
-  class:bg-gradient-to-br={achievement.unlocked}
-  class:from-amber-50={achievement.unlocked}
-  class:to-orange-50={achievement.unlocked}
-  class:shadow-sm={achievement.unlocked}
-  class:border-slate-200={!achievement.unlocked}
-  class:bg-slate-50={!achievement.unlocked}
-  class:opacity-70={!achievement.unlocked}
+  class={`group relative flex flex-col items-center rounded-2xl border p-3 text-center transition ${
+    achievement.unlocked
+      ? 'border-amber-300 bg-gradient-to-br from-amber-50 to-orange-50 shadow-sm dark:border-amber-700 dark:from-amber-950/40 dark:to-orange-950/40'
+      : 'border-slate-200 bg-slate-50 opacity-70 dark:border-slate-700 dark:bg-slate-800'
+  }`}
 >
   <span
     class="text-3xl"
@@ -50,14 +46,16 @@
   </span>
 
   <p
-    class="mt-1 text-sm font-bold leading-tight"
-    class:text-slate-900={achievement.unlocked}
-    class:text-slate-500={!achievement.unlocked}
+    class={`mt-1 text-sm font-bold leading-tight ${
+      achievement.unlocked
+        ? 'text-slate-900 dark:text-amber-100'
+        : 'text-slate-500 dark:text-slate-400'
+    }`}
   >
     {achievement.title}
   </p>
 
-  <p class="mt-0.5 text-[11px] leading-snug text-slate-500">
+  <p class="mt-0.5 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
     {achievement.description}
   </p>
 

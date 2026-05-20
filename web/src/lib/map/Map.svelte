@@ -4,6 +4,20 @@
   import 'leaflet.markercluster';
   import type { ManholeSummary } from '@dexkepo/shared';
   import { buildMarkerIcon, clusterIcon } from './markerIcons';
+  import { theme } from '../stores/theme';
+
+  /**
+   * CartoCDN basemaps — free, no API key required for normal use, Latin labels
+   * everywhere (no more Japanese-only street names). Voyager for light theme,
+   * dark_all for dark. Standard OSM attribution still required since the tiles
+   * derive from OSM data.
+   */
+  const LIGHT_TILE_URL =
+    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+  const DARK_TILE_URL =
+    'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+  const TILE_ATTRIBUTION =
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
   type Props = {
     manholes: ManholeSummary[];
@@ -30,17 +44,25 @@
 
   let container: HTMLDivElement;
   let map: L.Map | null = null;
+  let tileLayer: L.TileLayer | null = null;
   let visitedLayer: L.MarkerClusterGroup | null = null;
   let unvisitedLayer: L.MarkerClusterGroup | null = null;
   let resizeObs: ResizeObserver | null = null;
   let mounted = false;
+  let currentTheme: 'light' | 'dark' = 'light';
+
+  function buildTileLayer(forTheme: 'light' | 'dark'): L.TileLayer {
+    return L.tileLayer(forTheme === 'dark' ? DARK_TILE_URL : LIGHT_TILE_URL, {
+      attribution: TILE_ATTRIBUTION,
+      maxZoom: 19,
+      subdomains: 'abcd',
+    });
+  }
 
   onMount(() => {
     map = L.map(container, { worldCopyJump: false }).setView([36.5, 138], 5);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19
-    }).addTo(map);
+    currentTheme = $theme;
+    tileLayer = buildTileLayer(currentTheme).addTo(map);
 
     visitedLayer = (L as any).markerClusterGroup({
       iconCreateFunction: clusterIcon('visited'),
@@ -138,6 +160,22 @@
     if (mounted) {
       refresh();
     }
+  });
+
+  // Swap the tile layer when the user toggles dark mode.
+  $effect(() => {
+    const next = $theme;
+
+    if (!mounted || !map || next === currentTheme) {
+      return;
+    }
+
+    if (tileLayer) {
+      map.removeLayer(tileLayer);
+    }
+
+    tileLayer = buildTileLayer(next).addTo(map);
+    currentTheme = next;
   });
 </script>
 

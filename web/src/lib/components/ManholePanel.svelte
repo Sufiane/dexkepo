@@ -100,17 +100,18 @@
 
 <div
   class="dx-panel fixed bottom-0 left-0 right-0 z-[1000] max-h-[75vh] overflow-y-auto rounded-t-2xl bg-white p-4 shadow-2xl
-         md:bottom-auto md:left-auto md:right-4 md:top-20 md:max-h-[80vh] md:w-[28rem] md:rounded-2xl"
+         md:bottom-auto md:left-auto md:right-4 md:top-20 md:max-h-[80vh] md:w-[28rem] md:rounded-2xl
+         dark:bg-slate-900 dark:text-slate-100 dark:ring-1 dark:ring-slate-700"
 >
   <div class="flex items-start justify-between gap-3">
     <div class="flex-1">
       <p class="text-xs font-bold uppercase tracking-widest text-rose-500">
         #{manholeNo}
-        <span class="ml-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700">
+        <span class="ml-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
           {prefEnName}
         </span>
       </p>
-      <h2 class="mt-1 text-xl font-extrabold leading-tight text-slate-900">
+      <h2 class="mt-1 text-xl font-extrabold leading-tight text-slate-900 dark:text-white">
         {name}
       </h2>
       {#if $detailQ.data?.city}
@@ -153,7 +154,7 @@
       <ul class="mt-2 flex flex-wrap gap-2">
         {#each pokemonNames as pokemonName}
           <li
-            class="flex items-center gap-1.5 rounded-full bg-slate-100 py-1 pl-1 pr-3 text-sm font-medium text-slate-800"
+            class="flex items-center gap-1.5 rounded-full bg-slate-100 py-1 pl-1 pr-3 text-sm font-medium text-slate-800 dark:bg-slate-800 dark:text-slate-200"
           >
             <img
               src={spriteUrl(pokemonName)}
