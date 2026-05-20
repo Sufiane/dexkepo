@@ -121,6 +121,8 @@
             prefEnName={selected.prefEnName}
             pictureUrl={selected.pictureUrl}
             pokemonNames={selected.pokemonNames}
+            lat={selected.lat}
+            lng={selected.lng}
             visited={visitedSet.has(selected.manholeNo)}
             onClose={() => (selected = null)}
             onToggle={() => handleToggle(selected!.manholeNo)}
