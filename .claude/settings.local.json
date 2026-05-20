@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(npm --workspace api run lint)",
+      "Bash(npm --workspace api run typecheck)"
     ]
   }
 }

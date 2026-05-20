@@ -8,12 +8,13 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(cuid())
-  pseudo    String     @unique
-  email     String     @unique
-  password  String
-  createdAt DateTime   @default(now())
-  dex       DexEntry[]
+  id          String                @id @default(cuid())
+  pseudo      String                @unique
+  email       String                @unique
+  password    String
+  createdAt   DateTime              @default(now())
+  dex         DexEntry[]
+  achievements UnlockedAchievement[]
 }
 
 model Manhole {
@@ -38,5 +39,18 @@ model DexEntry {
   manhole   Manhole  @relation(fields: [manholeNo], references: [manholeNo])
 
   @@id([userId, manholeNo])
+  @@index([userId])
+}
+
+/// Persisted "sticky" achievement unlock — once a row exists, the badge stays
+/// earned even if the user later unmarks visits or the threshold definition
+/// changes. Inserted lazily on the first /me/achievements read after eligibility.
+model UnlockedAchievement {
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, achievementId])
   @@index([userId])
 }

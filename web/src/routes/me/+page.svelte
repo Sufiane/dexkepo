@@ -1,56 +1,161 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { createQuery } from '@tanstack/svelte-query';
+  import type { AchievementCategory } from '@dexkepo/shared';
   import { auth } from '$lib/stores/auth';
   import { listDex } from '$lib/api/dex';
   import { listManholes } from '$lib/api/manholes';
+  import { listAchievements } from '$lib/api/achievements';
+  import AchievementBadge from '$lib/components/AchievementBadge.svelte';
 
   $effect(() => {
-    if (!$auth) goto('/login');
+    if (!$auth) {
+      goto('/login');
+    }
   });
 
-  const dexQ = createQuery({ queryKey: ['dex'], queryFn: listDex, enabled: !!$auth });
-  const manholesQ = createQuery({ queryKey: ['manholes'], queryFn: listManholes });
+  const dexQ = createQuery({
+    queryKey: ['dex'],
+    queryFn: listDex,
+    enabled: !!$auth,
+  });
+  const manholesQ = createQuery({
+    queryKey: ['manholes'],
+    queryFn: listManholes,
+  });
+  const achievementsQ = createQuery({
+    queryKey: ['achievements'],
+    queryFn: listAchievements,
+    enabled: !!$auth,
+  });
 
   const total = $derived($manholesQ.data?.length ?? 0);
   const visited = $derived($dexQ.data ?? []);
+  const achievements = $derived($achievementsQ.data ?? []);
+
+  const completion = $derived.by(() => {
+    if (!total) {
+      return 0;
+    }
+
+    return (visited.length / total) * 100;
+  });
+
+  const categoryLabels: Record<AchievementCategory, string> = {
+    count: 'Milestones',
+    geo: 'Geography',
+    time: 'Streaks',
+  };
+
+  const categories: AchievementCategory[] = ['count', 'geo', 'time'];
+
+  function byCategory(cat: AchievementCategory) {
+    return achievements.filter((achievement) => achievement.category === cat);
+  }
 </script>
 
 {#if $auth}
-  <div class="mx-auto mt-8 w-full max-w-2xl p-4">
-    <header class="rounded-2xl bg-white p-5 shadow">
-      <h1 class="text-2xl font-bold">{$auth.user.pseudo}</h1>
-      <p class="text-sm text-slate-600">{$auth.user.email}</p>
-      <p class="mt-3 text-lg">
-        <span class="font-semibold tabular-nums">{visited.length}</span>
-        <span class="text-slate-500"> / {total} covers visited</span>
-      </p>
-      <div class="mt-2 h-2 w-full overflow-hidden rounded bg-slate-100">
-        <div class="h-full bg-green-600"
-             style="width: {total ? (visited.length / total * 100).toFixed(1) : 0}%"></div>
+  <div class="mx-auto mt-6 w-full max-w-4xl space-y-6 p-4">
+    <!-- Hero -->
+    <header class="rounded-3xl bg-gradient-to-br from-rose-500 via-red-500 to-orange-500 p-6 text-white shadow-lg">
+      <p class="text-xs font-bold uppercase tracking-[.25em] text-white/85">Trainer</p>
+      <h1 class="mt-1 text-3xl font-extrabold">{$auth.user.pseudo}</h1>
+      <p class="text-sm text-white/80">{$auth.user.email}</p>
+
+      <div class="mt-5 flex items-end gap-3">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-white/70">Progress</p>
+          <p class="text-4xl font-extrabold tabular-nums">
+            {visited.length}<span class="text-2xl text-white/70"> / {total}</span>
+          </p>
+        </div>
+        <p class="ml-auto text-xl font-bold tabular-nums text-white/90">
+          {completion.toFixed(1)}%
+        </p>
+      </div>
+
+      <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/25">
+        <div
+          class="h-full rounded-full bg-white shadow-inner"
+          style="width: {completion.toFixed(1)}%"
+        ></div>
       </div>
     </header>
 
-    <section class="mt-6">
-      <h2 class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-600">
-        Visited ({visited.length})
-      </h2>
-      {#if $dexQ.isLoading}
-        <p class="text-sm text-slate-500">Loading…</p>
-      {:else if visited.length === 0}
-        <p class="text-sm text-slate-500">No visits yet. Open the map and mark some!</p>
+    <!-- Achievements -->
+    <section>
+      <div class="flex items-baseline justify-between">
+        <h2 class="text-lg font-extrabold tracking-tight text-slate-900">Achievements</h2>
+        <p class="text-sm tabular-nums text-slate-500">
+          {achievements.filter((achievement) => achievement.unlocked).length} / {achievements.length}
+        </p>
+      </div>
+
+      {#if $achievementsQ.isLoading}
+        <p class="mt-3 text-sm text-slate-500">Loading…</p>
       {:else}
-        <ul class="divide-y divide-slate-200 rounded-2xl bg-white shadow">
-          {#each visited as e}
-            <li class="flex items-center justify-between gap-3 p-3 text-sm">
-              <div>
-                <p class="font-medium">#{e.manholeNo} · {e.manhole.name}</p>
-                <p class="text-xs text-slate-500">{e.manhole.prefName}{e.manhole.city ? ` · ${e.manhole.city}` : ''}</p>
+        {#each categories as category}
+          {@const items = byCategory(category)}
+          {#if items.length}
+            <div class="mt-4">
+              <p class="text-[10px] font-bold uppercase tracking-[.25em] text-slate-500">
+                {categoryLabels[category]}
+              </p>
+              <div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+                {#each items as achievement (achievement.id)}
+                  <AchievementBadge achievement={achievement} />
+                {/each}
               </div>
-              <span class="text-xs text-slate-400">{new Date(e.visitedAt).toLocaleDateString()}</span>
+            </div>
+          {/if}
+        {/each}
+      {/if}
+    </section>
+
+    <!-- Recent visits -->
+    <section>
+      <h2 class="text-lg font-extrabold tracking-tight text-slate-900">
+        Recent visits
+        <span class="ml-1 text-sm font-medium text-slate-500">({visited.length})</span>
+      </h2>
+
+      {#if $dexQ.isLoading}
+        <p class="mt-2 text-sm text-slate-500">Loading…</p>
+      {:else if visited.length === 0}
+        <p class="mt-2 text-sm text-slate-500">
+          No visits yet. Open the map and mark some!
+        </p>
+      {:else}
+        <ul class="mt-2 divide-y divide-slate-200 overflow-hidden rounded-2xl bg-white shadow-sm">
+          {#each visited.slice(0, 25) as entry}
+            <li class="flex items-center gap-3 p-3 text-sm">
+              {#if entry.manhole.pictureUrl}
+                <img
+                  src={`https://local.pokemon.jp${entry.manhole.pictureUrl}`}
+                  alt={entry.manhole.name}
+                  class="h-12 w-12 flex-shrink-0 rounded-lg object-cover ring-1 ring-slate-200"
+                  loading="lazy"
+                />
+              {/if}
+              <div class="min-w-0 flex-1">
+                <p class="truncate font-semibold text-slate-900">
+                  #{entry.manholeNo} · {entry.manhole.name}
+                </p>
+                <p class="truncate text-xs text-slate-500">
+                  {entry.manhole.prefName}{entry.manhole.city ? ` · ${entry.manhole.city}` : ''}
+                </p>
+              </div>
+              <span class="text-[11px] tabular-nums text-slate-400">
+                {new Date(entry.visitedAt).toLocaleDateString()}
+              </span>
             </li>
           {/each}
         </ul>
+        {#if visited.length > 25}
+          <p class="mt-2 text-xs text-slate-500">
+            Showing the 25 most recent.
+          </p>
+        {/if}
       {/if}
     </section>
   </div>

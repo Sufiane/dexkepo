@@ -6,5 +6,6 @@ import { DexDb } from './dex.db';
 @Module({
   controllers: [DexController],
   providers: [DexService, DexDb],
+  exports: [DexService],
 })
 export class DexModule {}

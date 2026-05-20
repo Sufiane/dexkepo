@@ -76,6 +76,7 @@
 
   function handleToggle(manholeNo: string): void {
     queryClient.invalidateQueries({ queryKey: ['dex'] });
+    queryClient.invalidateQueries({ queryKey: ['achievements'] });
 
     // Trigger the pop animation on the just-toggled marker, then clear so
     // re-renders don't keep replaying it.

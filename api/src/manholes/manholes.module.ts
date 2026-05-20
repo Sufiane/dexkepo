@@ -6,5 +6,6 @@ import { ManholesDb } from './manholes.db';
 @Module({
   controllers: [ManholesController],
   providers: [ManholesService, ManholesDb],
+  exports: [ManholesService],
 })
 export class ManholesModule {}
