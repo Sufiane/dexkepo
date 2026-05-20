@@ -9,6 +9,7 @@ import { DexModule } from './dex/dex.module';
 import { HealthModule } from './health/health.module';
 import { AchievementsModule } from './achievements/achievements.module';
 import { FavoritesModule } from './favorites/favorites.module';
+import { TrainersModule } from './trainers/trainers.module';
 
 const ONE_MINUTE_MS = 60_000;
 const ONE_HOUR_MS = 60 * ONE_MINUTE_MS;
@@ -35,6 +36,7 @@ const ONE_HOUR_MS = 60 * ONE_MINUTE_MS;
     HealthModule,
     AchievementsModule,
     FavoritesModule,
+    TrainersModule,
   ],
 })
 export class AppModule {}

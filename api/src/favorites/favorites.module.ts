@@ -8,5 +8,6 @@ import { FavoritesService } from './favorites.service';
   imports: [DexModule, ManholesModule],
   controllers: [FavoritesController],
   providers: [FavoritesService],
+  exports: [FavoritesService],
 })
 export class FavoritesModule {}

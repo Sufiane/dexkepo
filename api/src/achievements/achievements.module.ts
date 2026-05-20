@@ -10,5 +10,6 @@ import { PokemonDb } from './pokemon.db';
   imports: [DexModule, ManholesModule],
   controllers: [AchievementsController],
   providers: [AchievementsService, AchievementsDb, PokemonDb],
+  exports: [AchievementsService],
 })
 export class AchievementsModule {}
