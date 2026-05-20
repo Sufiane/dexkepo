@@ -32,3 +32,13 @@ export function setAuth(res: AuthResponse) {
 export function logout() {
   auth.set(null);
 }
+
+export function patchUser(patch: Partial<UserPublic>): void {
+  auth.update((current) => {
+    if (!current) {
+      return current;
+    }
+
+    return { ...current, user: { ...current.user, ...patch } };
+  });
+}
