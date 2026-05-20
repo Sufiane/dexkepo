@@ -9,6 +9,7 @@
   import { getFavorites } from '$lib/api/favorites';
   import AchievementBadge from '$lib/components/AchievementBadge.svelte';
   import FavoritePokemon from '$lib/components/FavoritePokemon.svelte';
+  import PublicProfileCard from '$lib/components/me/PublicProfileCard.svelte';
 
   $effect(() => {
     if (!$auth) {
@@ -92,6 +93,8 @@
         ></div>
       </div>
     </header>
+
+    <PublicProfileCard />
 
     <!-- Favourite Pokémon -->
     <FavoritePokemon data={$favoritesQ.data} loading={$favoritesQ.isLoading} />

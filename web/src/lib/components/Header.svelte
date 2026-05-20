@@ -53,6 +53,12 @@
     </button>
     {#if $auth}
       <a
+        href={`/trainer/${$auth.user.pseudo}`}
+        class="text-sm font-semibold text-white/90 hover:text-white"
+      >
+        Public profile
+      </a>
+      <a
         href="/me"
         class="rounded-full bg-white/20 px-3 py-1.5 font-semibold text-white backdrop-blur-sm hover:bg-white/30"
       >
