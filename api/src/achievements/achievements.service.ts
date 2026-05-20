@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AchievementDefinition, AchievementStatus } from '@dexkepo/shared';
+import { AchievementCategory, AchievementDefinition, AchievementStatus } from '@dexkepo/shared';
 import { DexService } from '../dex/dex.service';
 import { ManholesService } from '../manholes/manholes.service';
 import { AchievementsDb } from './achievements.db';
@@ -106,5 +106,31 @@ export class AchievementsService {
 
       return { ...def, ...outcome };
     });
+  }
+
+  /**
+   * Public-safe slice of `listForUser`: unlocked badges only, no progress
+   * numerators, no email/userid. Used by the anonymous trainer endpoint.
+   */
+  async publicListForUser(userId: string): Promise<
+    Array<{
+      id: string;
+      title: string;
+      description: string;
+      category: AchievementCategory;
+      unlockedAt: string;
+    }>
+  > {
+    const all = await this.listForUser(userId);
+
+    return all
+      .filter((entry) => entry.unlocked && entry.unlockedAt != null)
+      .map((entry) => ({
+        id: entry.id,
+        title: entry.title,
+        description: entry.description,
+        category: entry.category,
+        unlockedAt: entry.unlockedAt as string,
+      }));
   }
 }
