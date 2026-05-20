@@ -45,9 +45,10 @@
     count: 'Milestones',
     geo: 'Geography',
     time: 'Streaks',
+    type: 'Pokémon types',
   };
 
-  const categories: AchievementCategory[] = ['count', 'geo', 'time'];
+  const categories: AchievementCategory[] = ['count', 'geo', 'time', 'type'];
 
   function byCategory(cat: AchievementCategory) {
     return achievements.filter((achievement) => achievement.category === cat);

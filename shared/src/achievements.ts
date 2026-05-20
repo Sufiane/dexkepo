@@ -1,4 +1,4 @@
-export type AchievementCategory = 'count' | 'geo' | 'time';
+export type AchievementCategory = 'count' | 'geo' | 'time' | 'type';
 
 export type AchievementDefinition = {
   id: string;

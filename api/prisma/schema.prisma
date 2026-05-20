@@ -54,3 +54,21 @@ model UnlockedAchievement {
   @@id([userId, achievementId])
   @@index([userId])
 }
+
+/// Static catalogue of every Pokemon featured on a manhole cover. Populated
+/// once by prisma/enrich-pokemon.ts using PokeAPI. Names match exactly what
+/// appears in Manhole.pokemon JSON so they can be joined by name.
+model Pokemon {
+  name        String   @id
+  /// PokeAPI numeric id. Not unique — the source data contains two
+  /// near-duplicate names per species ("Farfetch'd" vs "Farfetch’d", straight
+  /// vs curly apostrophe) which both resolve to the same PokeAPI entity.
+  pokeApiId   Int
+  /// Lowercase PokeAPI type slugs, e.g. ["water", "psychic"].
+  types       String[]
+  isLegendary Boolean  @default(false)
+  isMythical  Boolean  @default(false)
+  generation  Int      @default(0)
+
+  @@index([pokeApiId])
+}

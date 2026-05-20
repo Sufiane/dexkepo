@@ -140,8 +140,8 @@ function firstVisitMatching(
 }
 
 export const timeEvaluators: EvaluatorMap = {
-  'on-a-roll': (visits) => onARoll(visits),
-  'week-of-visits': (visits) => weekOfVisits(visits),
-  'early-bird': (visits) => firstVisitMatching(visits, (hour) => hour < EARLY_BIRD_HOUR),
-  'night-owl': (visits) => firstVisitMatching(visits, (hour) => hour >= NIGHT_OWL_HOUR),
+  'on-a-roll': (ctx) => onARoll(ctx.visits),
+  'week-of-visits': (ctx) => weekOfVisits(ctx.visits),
+  'early-bird': (ctx) => firstVisitMatching(ctx.visits, (hour) => hour < EARLY_BIRD_HOUR),
+  'night-owl': (ctx) => firstVisitMatching(ctx.visits, (hour) => hour >= NIGHT_OWL_HOUR),
 };

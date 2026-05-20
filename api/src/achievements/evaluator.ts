@@ -1,4 +1,5 @@
 import { AchievementDefinition, AchievementStatus, ManholeSummary } from '@dexkepo/shared';
+import { Pokemon } from '@prisma/client';
 import { DexEntryWithManhole } from '../dex/dex.db';
 
 /**
@@ -8,14 +9,22 @@ import { DexEntryWithManhole } from '../dex/dex.db';
 export type EvaluationOutcome = Omit<AchievementStatus, keyof AchievementDefinition>;
 
 /**
- * Pure function that decides whether an achievement is unlocked for a given
- * user. Receives the user's visits and the full manhole list (some
- * achievements need totals).
+ * Inputs every evaluator may need. Categories that don't use a field just
+ * ignore it — keeping a single shape means new categories can add inputs
+ * without churning every existing evaluator's call site.
  */
-export type Evaluator = (
-  visits: DexEntryWithManhole[],
-  allManholes: ManholeSummary[],
-) => EvaluationOutcome;
+export type EvaluationContext = {
+  visits: DexEntryWithManhole[];
+  allManholes: ManholeSummary[];
+  /** Name → metadata for every Pokemon we've enriched from PokeAPI. */
+  pokemonByName: Map<string, Pokemon>;
+};
+
+/**
+ * Pure function that decides whether an achievement is unlocked for a given
+ * user.
+ */
+export type Evaluator = (ctx: EvaluationContext) => EvaluationOutcome;
 
 /** Map from achievement id to its evaluator. Each category file exports one. */
 export type EvaluatorMap = Record<string, Evaluator>;

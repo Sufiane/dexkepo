@@ -111,7 +111,7 @@ function localHero(
 }
 
 export const geoEvaluators: EvaluatorMap = {
-  globetrotter: (visits) => distinctPrefectures(visits, GLOBETROTTER_PREFECTURE_TARGET),
-  'all-prefectures': (visits, allManholes) => allPrefectures(visits, allManholes),
-  'local-hero': (visits, allManholes) => localHero(visits, allManholes),
+  globetrotter: (ctx) => distinctPrefectures(ctx.visits, GLOBETROTTER_PREFECTURE_TARGET),
+  'all-prefectures': (ctx) => allPrefectures(ctx.visits, ctx.allManholes),
+  'local-hero': (ctx) => localHero(ctx.visits, ctx.allManholes),
 };

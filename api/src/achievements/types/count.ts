@@ -74,9 +74,9 @@ function visitCount(visits: DexEntryWithManhole[], target: number): EvaluationOu
 }
 
 export const countEvaluators: EvaluatorMap = {
-  'first-steps': (visits) => visitCount(visits, FIRST_VISIT_THRESHOLD),
-  'rookie-trainer': (visits) => visitCount(visits, ROOKIE_THRESHOLD),
-  'road-warrior': (visits) => visitCount(visits, ROAD_WARRIOR_THRESHOLD),
-  'halfway-there': (visits) => visitCount(visits, HALFWAY_THRESHOLD),
-  'pokemon-master': (visits) => visitCount(visits, MASTER_THRESHOLD),
+  'first-steps': (ctx) => visitCount(ctx.visits, FIRST_VISIT_THRESHOLD),
+  'rookie-trainer': (ctx) => visitCount(ctx.visits, ROOKIE_THRESHOLD),
+  'road-warrior': (ctx) => visitCount(ctx.visits, ROAD_WARRIOR_THRESHOLD),
+  'halfway-there': (ctx) => visitCount(ctx.visits, HALFWAY_THRESHOLD),
+  'pokemon-master': (ctx) => visitCount(ctx.visits, MASTER_THRESHOLD),
 };
