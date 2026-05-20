@@ -8,13 +8,14 @@ datasource db {
 }
 
 model User {
-  id          String                @id @default(cuid())
-  pseudo      String                @unique
-  email       String                @unique
-  password    String
-  createdAt   DateTime              @default(now())
-  dex         DexEntry[]
-  achievements UnlockedAchievement[]
+  id            String                @id @default(cuid())
+  pseudo        String                @unique
+  email         String                @unique
+  password      String
+  publicProfile Boolean               @default(true)
+  createdAt     DateTime              @default(now())
+  dex           DexEntry[]
+  achievements  UnlockedAchievement[]
 }
 
 model Manhole {
