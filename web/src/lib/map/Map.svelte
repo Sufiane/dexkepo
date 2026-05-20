@@ -11,6 +11,8 @@
     showVisited: boolean;
     showUnvisited: boolean;
     justToggledNo: string | null;
+    /** Incrementing number that signals "refit map bounds to current data". */
+    fitTrigger: number;
     onSelect: (m: ManholeSummary) => void;
   };
 
@@ -20,8 +22,11 @@
     showVisited,
     showUnvisited,
     justToggledNo,
+    fitTrigger,
     onSelect,
   }: Props = $props();
+
+  let lastFitTrigger = -1;
 
   let container: HTMLDivElement;
   let map: L.Map | null = null;
@@ -111,8 +116,13 @@
       map.removeLayer(unvisitedLayer);
     }
 
-    if (bounds.length && map.getZoom() === 5) {
-      map.fitBounds(bounds as any, { padding: [40, 40] });
+    // Fit on first load (zoom is still the initial 5) OR when the parent
+    // bumps fitTrigger (e.g. after applying a search).
+    const shouldFit = bounds.length && (map.getZoom() === 5 || fitTrigger !== lastFitTrigger);
+
+    if (shouldFit) {
+      lastFitTrigger = fitTrigger;
+      map.fitBounds(bounds as any, { padding: [40, 40], maxZoom: 12 });
     }
   }
 
@@ -123,6 +133,7 @@
     void showVisited;
     void showUnvisited;
     void justToggledNo;
+    void fitTrigger;
 
     if (mounted) {
       refresh();

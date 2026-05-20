@@ -30,6 +30,7 @@
 
   let selected: ManholeSummary | null = $state(null);
   let justToggledNo: string | null = $state(null);
+  let fitTrigger = $state(0);
 
   const all = $derived($manholesQ.data ?? []);
   const visitedSet = $derived(
@@ -41,12 +42,37 @@
   );
 
   const filtered = $derived(
-    all.filter(
-      (manhole) =>
-        $filters.prefectures.length === 0 ||
-        $filters.prefectures.includes(manhole.prefEnName),
-    ),
+    all.filter((manhole) => {
+      if (
+        $filters.prefectures.length > 0 &&
+        !$filters.prefectures.includes(manhole.prefEnName)
+      ) {
+        return false;
+      }
+
+      if (
+        $filters.pokemonSearch &&
+        !manhole.pokemonNames.includes($filters.pokemonSearch)
+      ) {
+        return false;
+      }
+
+      return true;
+    }),
   );
+
+  // Refit the map whenever a search or prefecture filter changes the result set
+  // boundary. Tracking the search value separately lets us avoid spurious
+  // refits during normal interactions (e.g. toggling a single marker).
+  let lastFitKey = '';
+  $effect(() => {
+    const key = `${$filters.pokemonSearch}|${$filters.prefectures.join(',')}`;
+
+    if (key !== lastFitKey) {
+      lastFitKey = key;
+      fitTrigger += 1;
+    }
+  });
 
   function handleToggle(manholeNo: string): void {
     queryClient.invalidateQueries({ queryKey: ['dex'] });
@@ -71,6 +97,7 @@
     </div>
   {:else}
     <FilterBar
+      manholes={all}
       prefectures={prefectures}
       visitedCount={visitedSet.size}
       totalCount={all.length}
@@ -82,6 +109,7 @@
         showVisited={$filters.showVisited}
         showUnvisited={$filters.showUnvisited}
         justToggledNo={justToggledNo}
+        fitTrigger={fitTrigger}
         onSelect={(manhole) => (selected = manhole)}
       />
       {#if selected}
