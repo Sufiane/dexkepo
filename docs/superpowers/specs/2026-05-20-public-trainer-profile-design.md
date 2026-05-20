@@ -96,16 +96,20 @@ export class TrainersDb {
 ```ts
 @Controller('trainers')
 @UseGuards(TrainerPublicThrottlerGuard)
+@SkipThrottle({ 'dex-burst': true, 'dex-sustained': true })
 export class TrainersController {
   constructor(private trainers: TrainersService) {}
 
   @Get(':pseudo')
-  @Throttle({ 'trainer-public': { limit: 60, ttl: 60_000 } })
   one(@Param('pseudo') pseudo: string): Promise<TrainerProfile> {
     return this.trainers.profile(pseudo);
   }
 }
 ```
+
+The `trainer-public` tier's limits live solely in `ThrottlerModule.forRoot([...])` — no per-route `@Throttle` override needed. `@SkipThrottle` opts out of the dex tiers, which would otherwise also apply to this controller because all registered tiers are global by default.
+
+Symmetrically, the existing `DexController` needs `@SkipThrottle({ 'trainer-public': true })` added so its requests don't count against the public-profile bucket.
 
 ### Throttler tier
 
