@@ -9,6 +9,8 @@
   import { getFavorites } from '$lib/api/favorites';
   import AchievementBadge from '$lib/components/AchievementBadge.svelte';
   import FavoritePokemon from '$lib/components/FavoritePokemon.svelte';
+  import AchievementsGridSkeleton from '$lib/components/skeletons/AchievementsGridSkeleton.svelte';
+  import RecentVisitsSkeleton from '$lib/components/skeletons/RecentVisitsSkeleton.svelte';
   import PublicProfileCard from '$lib/components/me/PublicProfileCard.svelte';
 
   $effect(() => {
@@ -109,7 +111,7 @@
       </div>
 
       {#if $achievementsQ.isLoading}
-        <p class="mt-3 text-sm text-slate-500">Loading…</p>
+        <AchievementsGridSkeleton />
       {:else}
         {#each categories as category}
           {@const items = byCategory(category)}
@@ -137,7 +139,7 @@
       </h2>
 
       {#if $dexQ.isLoading}
-        <p class="mt-2 text-sm text-slate-500">Loading…</p>
+        <RecentVisitsSkeleton />
       {:else if visited.length === 0}
         <p class="mt-2 text-sm text-slate-500">
           No visits yet. Open the map and mark some!

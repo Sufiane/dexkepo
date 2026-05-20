@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { FavoritePokemon, FavoritesResponse } from '@dexkepo/shared';
   import { spriteUrl } from '../utils/pokemonSprite';
+  import FavoritesPodiumSkeleton from './skeletons/FavoritesPodiumSkeleton.svelte';
 
   type Props = {
     data: FavoritesResponse | undefined;
@@ -26,7 +27,7 @@
   </h2>
 
   {#if loading}
-    <p class="mt-2 text-sm text-slate-500">Loading…</p>
+    <FavoritesPodiumSkeleton />
   {:else if !data || (data.favorites.length === 0 && !data.completedAll)}
     <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
       Mark a few covers to see who your favourite Pokémon really is.

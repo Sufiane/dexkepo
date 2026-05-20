@@ -7,6 +7,7 @@
   import TrainerNotFound from '$lib/components/trainer/TrainerNotFound.svelte';
   import AchievementBadge from '$lib/components/AchievementBadge.svelte';
   import FavoritePokemon from '$lib/components/FavoritePokemon.svelte';
+  import TrainerProfileSkeleton from '$lib/components/skeletons/TrainerProfileSkeleton.svelte';
 
   const pseudo = $derived($page.params.pseudo ?? '');
 
@@ -35,7 +36,7 @@
 <div class="h-full overflow-y-auto">
   <div class="mx-auto mt-6 w-full max-w-4xl space-y-6 p-4 pb-12">
     {#if $profileQ.isLoading}
-      <p class="text-center text-sm text-slate-500">Loading…</p>
+      <TrainerProfileSkeleton />
     {:else if $profileQ.isError}
       <TrainerNotFound />
     {:else if $profileQ.data}
