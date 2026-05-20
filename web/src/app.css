@@ -140,3 +140,37 @@ html.dark, html.dark body {
 .dx-mark-btn:active:not(:disabled) {
   transform: scale(.97);
 }
+
+/* --- Landing-page scroll smoothness ------------------------------------- */
+html {
+  scroll-behavior: smooth;
+}
+
+/* --- Pokéball loader animations ---------------------------------------- */
+@keyframes dx-pokeball-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes dx-pokeball-breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.04); }
+}
+@keyframes dx-pokeball-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+
+.dx-pokeball-spin {
+  animation: dx-pokeball-spin 1.4s linear infinite;
+  transform-origin: 50% 50%;
+}
+.dx-pokeball-breathe {
+  animation: dx-pokeball-breathe 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dx-pokeball-spin,
+  .dx-pokeball-breathe {
+    animation: dx-pokeball-pulse 2s ease-in-out infinite;
+    transform: none !important;
+  }
+}
