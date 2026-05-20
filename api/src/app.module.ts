@@ -16,13 +16,16 @@ const ONE_HOUR_MS = 60 * ONE_MINUTE_MS;
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    // Two-tier rate limit. Buckets are global to the app; only routes that
-    // attach UserThrottlerGuard get protected. See dex.controller.ts.
-    //   burst:     10 requests / minute  → lets a day-trip log batch through
-    //   sustained: 60 requests / hour    → caps script farming at ~8h for all 470 covers
+    // Three-tier rate limit. Buckets are global to the app; only routes that
+    // attach UserThrottlerGuard or TrainerPublicThrottlerGuard get protected.
+    // See dex.controller.ts and trainers.controller.ts.
+    //   burst:           10 requests / minute  → lets a day-trip log batch through
+    //   sustained:       60 requests / hour    → caps script farming at ~8h for all 470 covers
+    //   trainer-public:  60 requests / minute  → IP-keyed for anonymous trainer endpoint
     ThrottlerModule.forRoot([
       { name: 'dex-burst', ttl: ONE_MINUTE_MS, limit: 10 },
       { name: 'dex-sustained', ttl: ONE_HOUR_MS, limit: 60 },
+      { name: 'trainer-public', ttl: ONE_MINUTE_MS, limit: 60 },
     ]),
     PrismaModule,
     AuthModule,

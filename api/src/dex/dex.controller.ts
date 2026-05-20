@@ -9,6 +9,7 @@ import { DexEntryWithManhole } from './dex.db';
 
 // JWT first (populates req.user) → UserThrottlerGuard reads req.user.id.
 @UseGuards(JwtAuthGuard, UserThrottlerGuard)
+@SkipThrottle({ 'trainer-public': true })
 @Controller('me/dex')
 export class DexController {
   constructor(private svc: DexService) {}
