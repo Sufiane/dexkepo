@@ -2,6 +2,7 @@ export type UserPublic = {
   id: string;
   pseudo: string;
   email: string;
+  publicProfile: boolean;
   createdAt?: string;
 };
 
