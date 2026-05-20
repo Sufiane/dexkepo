@@ -6,7 +6,9 @@
   import { listDex } from '$lib/api/dex';
   import { listManholes } from '$lib/api/manholes';
   import { listAchievements } from '$lib/api/achievements';
+  import { getFavorites } from '$lib/api/favorites';
   import AchievementBadge from '$lib/components/AchievementBadge.svelte';
+  import FavoritePokemon from '$lib/components/FavoritePokemon.svelte';
 
   $effect(() => {
     if (!$auth) {
@@ -26,6 +28,11 @@
   const achievementsQ = createQuery({
     queryKey: ['achievements'],
     queryFn: listAchievements,
+    enabled: !!$auth,
+  });
+  const favoritesQ = createQuery({
+    queryKey: ['favorites'],
+    queryFn: getFavorites,
     enabled: !!$auth,
   });
 
@@ -85,6 +92,9 @@
         ></div>
       </div>
     </header>
+
+    <!-- Favourite Pokémon -->
+    <FavoritePokemon data={$favoritesQ.data} loading={$favoritesQ.isLoading} />
 
     <!-- Achievements -->
     <section>

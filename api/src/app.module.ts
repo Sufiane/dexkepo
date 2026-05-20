@@ -8,6 +8,7 @@ import { ManholesModule } from './manholes/manholes.module';
 import { DexModule } from './dex/dex.module';
 import { HealthModule } from './health/health.module';
 import { AchievementsModule } from './achievements/achievements.module';
+import { FavoritesModule } from './favorites/favorites.module';
 
 const ONE_MINUTE_MS = 60_000;
 const ONE_HOUR_MS = 60 * ONE_MINUTE_MS;
@@ -30,6 +31,7 @@ const ONE_HOUR_MS = 60 * ONE_MINUTE_MS;
     DexModule,
     HealthModule,
     AchievementsModule,
+    FavoritesModule,
   ],
 })
 export class AppModule {}
