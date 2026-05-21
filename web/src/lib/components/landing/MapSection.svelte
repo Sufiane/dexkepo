@@ -5,7 +5,8 @@
   import { listManholes } from '$lib/api/manholes';
   import { listDex } from '$lib/api/dex';
   import { auth } from '$lib/stores/auth';
-  import { filters } from '$lib/stores/filters';
+  import { filters, isFiltered, resetFilters } from '$lib/stores/filters';
+  import { t } from '$lib/i18n/locale';
   import Map from '$lib/map/Map.svelte';
   import FilterBar from '$lib/components/FilterBar.svelte';
   import ManholePanel from '$lib/components/ManholePanel.svelte';
@@ -132,6 +133,24 @@
           fitTrigger={fitTrigger}
           onSelect={(manhole) => (selected = manhole)}
         />
+        {#if filtered.length === 0 && isFiltered($filters)}
+          <div
+            class="pointer-events-none absolute inset-x-0 top-4 z-[500] flex justify-center px-4"
+          >
+            <div
+              class="pointer-events-auto flex items-center gap-3 rounded-full bg-white px-4 py-2 text-sm shadow-lg ring-1 ring-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-700"
+            >
+              <span>{$t('filter.emptyResult')}</span>
+              <button
+                type="button"
+                onclick={resetFilters}
+                class="rounded-full bg-rose-500 px-3 py-1 text-xs font-bold text-white hover:bg-rose-600"
+              >
+                {$t('filter.clearAll')}
+              </button>
+            </div>
+          </div>
+        {/if}
         {#if selected}
           {#key selected.manholeNo}
             <ManholePanel

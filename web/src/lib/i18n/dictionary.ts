@@ -77,6 +77,8 @@ export const en = {
     legendaryOnly: 'Legendary',
     mythicalOnly: 'Mythical',
     unvisitedOnly: 'Unvisited',
+    emptyResult: 'No covers match your filters.',
+    clearAll: 'Clear all',
   },
   pokemonSearch: {
     label: 'Find a Pokémon',
@@ -278,6 +280,8 @@ export const ja: Dictionary = {
     legendaryOnly: '伝説のみ',
     mythicalOnly: '幻のみ',
     unvisitedOnly: '未訪問のみ',
+    emptyResult: '条件に合うマンホールがありません。',
+    clearAll: 'すべて解除',
   },
   pokemonSearch: {
     label: 'ポケモンを検索',

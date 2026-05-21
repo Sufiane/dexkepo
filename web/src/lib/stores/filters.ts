@@ -10,7 +10,7 @@ export type Filters = {
   unvisitedOnly: boolean;
 };
 
-export const filters = writable<Filters>({
+const DEFAULTS: Filters = {
   showVisited: true,
   showUnvisited: true,
   prefectures: [],
@@ -18,4 +18,24 @@ export const filters = writable<Filters>({
   legendaryOnly: false,
   mythicalOnly: false,
   unvisitedOnly: false,
-});
+};
+
+export const filters = writable<Filters>({ ...DEFAULTS });
+
+/** Reset all filters to defaults. */
+export function resetFilters(): void {
+  filters.set({ ...DEFAULTS });
+}
+
+/** True when any filter narrows the catalogue (i.e. not at default state). */
+export function isFiltered(state: Filters): boolean {
+  return (
+    state.prefectures.length > 0 ||
+    state.pokemonSearch !== '' ||
+    state.legendaryOnly ||
+    state.mythicalOnly ||
+    state.unvisitedOnly ||
+    !state.showVisited ||
+    !state.showUnvisited
+  );
+}
