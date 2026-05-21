@@ -5,7 +5,8 @@
   import { markVisited, unmarkVisited } from '../api/dex';
   import { getManhole } from '../api/manholes';
   import { spriteUrl } from '../utils/pokemonSprite';
-  import { t } from '$lib/i18n/locale';
+  import { t, locale } from '$lib/i18n/locale';
+  import { localisedPrefecture } from '$lib/i18n/prefectures';
 
   const PIC_BASE = 'https://local.pokemon.jp';
 
@@ -109,7 +110,7 @@
       <p class="text-xs font-bold uppercase tracking-widest text-rose-500">
         #{manholeNo}
         <span class="ml-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-          {prefEnName}
+          {localisedPrefecture(prefEnName, $locale)}
         </span>
       </p>
       <h2 class="mt-1 text-xl font-extrabold leading-tight text-slate-900 dark:text-white">

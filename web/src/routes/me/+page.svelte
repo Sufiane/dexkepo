@@ -3,7 +3,8 @@
   import { createQuery } from '@tanstack/svelte-query';
   import type { AchievementCategory } from '@dexkepo/shared';
   import { auth } from '$lib/stores/auth';
-  import { t } from '$lib/i18n/locale';
+  import { t, locale } from '$lib/i18n/locale';
+  import { localisedPrefecture } from '$lib/i18n/prefectures';
   import { listDex } from '$lib/api/dex';
   import { listManholes } from '$lib/api/manholes';
   import { listAchievements } from '$lib/api/achievements';
@@ -173,7 +174,7 @@
                   #{entry.manholeNo} · {entry.manhole.name}
                 </p>
                 <p class="truncate text-xs text-slate-500">
-                  {entry.manhole.prefName}{entry.manhole.city ? ` · ${entry.manhole.city}` : ''}
+                  {localisedPrefecture(entry.manhole.prefName, $locale)}{entry.manhole.city ? ` · ${entry.manhole.city}` : ''}
                 </p>
               </div>
               <span class="text-[11px] tabular-nums text-slate-400">

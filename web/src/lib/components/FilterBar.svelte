@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { ManholeSummary } from '@dexkepo/shared';
   import { filters } from '../stores/filters';
-  import { t } from '$lib/i18n/locale';
+  import { t, locale } from '$lib/i18n/locale';
+  import { localisedPrefecture } from '$lib/i18n/prefectures';
   import PokemonSearch from './PokemonSearch.svelte';
 
   type Props = {
@@ -72,7 +73,7 @@
             checked={$filters.prefectures.includes(prefecture)}
             onchange={() => togglePref(prefecture)}
           />
-          <span>{prefecture}</span>
+          <span>{localisedPrefecture(prefecture, $locale)}</span>
         </label>
       {/each}
     </div>
