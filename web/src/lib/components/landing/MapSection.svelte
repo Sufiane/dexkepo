@@ -60,6 +60,18 @@
         return false;
       }
 
+      if ($filters.legendaryOnly && !manhole.hasLegendary) {
+        return false;
+      }
+
+      if ($filters.mythicalOnly && !manhole.hasMythical) {
+        return false;
+      }
+
+      if ($filters.unvisitedOnly && visitedSet.has(manhole.manholeNo)) {
+        return false;
+      }
+
       return true;
     }),
   );
@@ -68,7 +80,7 @@
   // search/prefecture pair separately avoids spurious refits on marker toggles.
   let lastFitKey = '';
   $effect(() => {
-    const key = `${$filters.pokemonSearch}|${$filters.prefectures.join(',')}`;
+    const key = `${$filters.pokemonSearch}|${$filters.prefectures.join(',')}|${$filters.legendaryOnly}|${$filters.mythicalOnly}|${$filters.unvisitedOnly}`;
 
     if (key !== lastFitKey) {
       lastFitKey = key;

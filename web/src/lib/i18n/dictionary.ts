@@ -74,6 +74,9 @@ export const en = {
     prefectures: 'Prefectures',
     all: 'all',
     clear: 'clear',
+    legendaryOnly: 'Legendary',
+    mythicalOnly: 'Mythical',
+    unvisitedOnly: 'Unvisited',
   },
   pokemonSearch: {
     label: 'Find a Pokémon',
@@ -272,6 +275,9 @@ export const ja: Dictionary = {
     prefectures: '都道府県',
     all: 'すべて',
     clear: 'クリア',
+    legendaryOnly: '伝説のみ',
+    mythicalOnly: '幻のみ',
+    unvisitedOnly: '未訪問のみ',
   },
   pokemonSearch: {
     label: 'ポケモンを検索',

@@ -61,6 +61,39 @@
     </label>
   </div>
 
+  <div class="flex flex-wrap gap-1.5">
+    <button
+      type="button"
+      aria-pressed={$filters.legendaryOnly}
+      onclick={() => filters.update((current) => ({ ...current, legendaryOnly: !current.legendaryOnly }))}
+      class={$filters.legendaryOnly
+        ? 'inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-amber-500 text-white dark:bg-amber-400 dark:text-amber-950'
+        : 'inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-amber-50 text-amber-800 ring-1 ring-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:ring-amber-700'}
+    >
+      ⭐ {$t('filter.legendaryOnly')}
+    </button>
+    <button
+      type="button"
+      aria-pressed={$filters.mythicalOnly}
+      onclick={() => filters.update((current) => ({ ...current, mythicalOnly: !current.mythicalOnly }))}
+      class={$filters.mythicalOnly
+        ? 'inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-pink-500 text-white dark:bg-pink-400 dark:text-pink-950'
+        : 'inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-pink-50 text-pink-800 ring-1 ring-pink-300 dark:bg-pink-950/40 dark:text-pink-300 dark:ring-pink-700'}
+    >
+      ✨ {$t('filter.mythicalOnly')}
+    </button>
+    <button
+      type="button"
+      aria-pressed={$filters.unvisitedOnly}
+      onclick={() => filters.update((current) => ({ ...current, unvisitedOnly: !current.unvisitedOnly }))}
+      class={$filters.unvisitedOnly
+        ? 'inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-slate-700 text-white dark:bg-slate-300 dark:text-slate-900'
+        : 'inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-slate-100 text-slate-700 ring-1 ring-slate-300 dark:bg-slate-800/60 dark:text-slate-300 dark:ring-slate-600'}
+    >
+      🗺️ {$t('filter.unvisitedOnly')}
+    </button>
+  </div>
+
   <details class="text-sm">
     <summary class="cursor-pointer font-semibold">
       {$t('filter.prefectures')} ({$filters.prefectures.length || $t('filter.all')})
