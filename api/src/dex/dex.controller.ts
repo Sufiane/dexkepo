@@ -18,7 +18,8 @@ export class DexController {
   constructor(private svc: DexService) {}
 
   // Listing your own dex is a read — it shouldn't eat the write-budget.
-  @SkipThrottle()
+  // Class already skips trainer-public; merged with this, GET skips all three.
+  @SkipThrottle({ 'dex-burst': true, 'dex-sustained': true })
   @Get()
   list(
     @CurrentUser() user: AuthUser,
