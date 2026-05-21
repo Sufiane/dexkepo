@@ -4,9 +4,7 @@
   // Logged-in users skip the marketing copy and land straight on the map;
   // anonymous users get the full landing pitch first.
   import { auth } from '$lib/stores/auth';
-  import LandingHero from '$lib/components/landing/LandingHero.svelte';
-  import LandingFeatures from '$lib/components/landing/LandingFeatures.svelte';
-  import LandingHowItWorks from '$lib/components/landing/LandingHowItWorks.svelte';
+  import LandingFold from '$lib/components/landing/LandingFold.svelte';
   import MapSection from '$lib/components/landing/MapSection.svelte';
   import SiteFooter from '$lib/components/landing/SiteFooter.svelte';
 </script>
@@ -18,9 +16,7 @@
   {#if $auth}
     <MapSection />
   {:else}
-    <LandingHero />
-    <LandingFeatures />
-    <LandingHowItWorks />
+    <LandingFold />
     <MapSection />
     <SiteFooter />
   {/if}
