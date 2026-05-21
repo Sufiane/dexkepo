@@ -1,6 +1,7 @@
 <script lang="ts">
   import { auth, patchUser } from '$lib/stores/auth';
   import { getMe, updateProfile } from '$lib/api/users';
+  import { t } from '$lib/i18n/locale';
 
   let saving = $state(false);
   let copied = $state(false);
@@ -39,7 +40,7 @@
 
       patchUser({ publicProfile: updated.publicProfile });
     } catch (err) {
-      errorMsg = err instanceof Error ? err.message : 'Could not save';
+      errorMsg = err instanceof Error ? err.message : $t('me.publicProfile.cantSave');
     } finally {
       saving = false;
     }
@@ -53,7 +54,7 @@
         copied = false;
       }, 1500);
     } catch {
-      errorMsg = 'Clipboard unavailable';
+      errorMsg = $t('me.publicProfile.clipboardUnavailable');
     }
   }
 </script>
@@ -62,11 +63,10 @@
   <div class="flex items-start justify-between gap-3">
     <div>
       <h2 class="text-base font-extrabold text-slate-900 dark:text-slate-100">
-        Public profile
+        {$t('me.publicProfile.title')}
       </h2>
       <p class="mt-1 text-xs text-slate-500">
-        Share your dex with a link. Toggle off to keep it private — visitors
-        will see a "not found" page.
+        {$t('me.publicProfile.help')}
       </p>
     </div>
 
@@ -76,7 +76,7 @@
       disabled={saving}
       class={`relative h-6 w-11 flex-shrink-0 rounded-full transition-colors disabled:opacity-50 ${isPublic ? 'bg-rose-500' : 'bg-slate-300 dark:bg-slate-600'}`}
       aria-pressed={isPublic}
-      aria-label="Toggle public profile"
+      aria-label={$t('me.publicProfile.toggle')}
     >
       <span
         class={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${isPublic ? 'left-[22px]' : 'left-0.5'}`}
@@ -96,9 +96,9 @@
       onclick={copy}
       disabled={!isPublic}
       class="rounded-lg bg-slate-900 px-3 py-1 text-xs font-bold text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
-      title={isPublic ? 'Copy link' : 'Enable public profile first'}
+      title={isPublic ? $t('me.publicProfile.copyLink') : $t('me.publicProfile.enableFirst')}
     >
-      {copied ? 'Copied!' : 'Copy link'}
+      {copied ? $t('me.publicProfile.copied') : $t('me.publicProfile.copyLink')}
     </button>
   </div>
 

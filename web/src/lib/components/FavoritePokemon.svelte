@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { FavoritePokemon, FavoritesResponse } from '@dexkepo/shared';
   import { spriteUrl } from '../utils/pokemonSprite';
+  import { t } from '$lib/i18n/locale';
   import FavoritesPodiumSkeleton from './skeletons/FavoritesPodiumSkeleton.svelte';
 
   type Props = {
@@ -23,14 +24,14 @@
          dark:bg-slate-900 dark:ring-slate-700"
 >
   <h2 class="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
-    Your favourite Pokémon
+    {$t('favorites.title')}
   </h2>
 
   {#if loading}
     <FavoritesPodiumSkeleton />
   {:else if !data || (data.favorites.length === 0 && !data.completedAll)}
     <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
-      Mark a few covers to see who your favourite Pokémon really is.
+      {$t('favorites.empty')}
     </p>
   {:else if data.completedAll && data.favorites.length === 1}
     {@const chosen = data.favorites[0]}
@@ -44,19 +45,21 @@
       />
       <div>
         <p class="text-[10px] font-bold uppercase tracking-widest text-amber-700 dark:text-amber-300">
-          👑 Self-declared favorite
+          {$t('favorites.chosenKicker')}
         </p>
         <p class="mt-1 text-2xl font-extrabold text-slate-900 dark:text-slate-100">
           {chosen.name}
         </p>
         <p class="text-xs text-slate-600 dark:text-slate-400">
-          Completed all {chosen.totalCount} cover{chosen.totalCount === 1 ? '' : 's'}.
+          {chosen.totalCount === 1
+            ? $t('favorites.chosenSubSingular', { count: chosen.totalCount })
+            : $t('favorites.chosenSubPlural', { count: chosen.totalCount })}
         </p>
       </div>
     </div>
   {:else if data.completedAll}
     <p class="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">
-      👑 You've visited every cover — they're <em>all</em> your favourites.
+      {$t('favorites.completedAllPlain')}
     </p>
   {:else}
     <div class="mt-3 grid grid-cols-3 gap-3">

@@ -3,6 +3,7 @@
   import { createQuery } from '@tanstack/svelte-query';
   import type { AchievementCategory } from '@dexkepo/shared';
   import { getTrainer } from '$lib/api/trainers';
+  import { t } from '$lib/i18n/locale';
   import TrainerHero from '$lib/components/trainer/TrainerHero.svelte';
   import TrainerNotFound from '$lib/components/trainer/TrainerNotFound.svelte';
   import AchievementBadge from '$lib/components/AchievementBadge.svelte';
@@ -17,12 +18,12 @@
     retry: false,
   });
 
-  const categoryLabels: Record<AchievementCategory, string> = {
-    count: 'Milestones',
-    geo: 'Geography',
-    time: 'Streaks',
-    type: 'Pokémon types',
-  };
+  const categoryLabels = $derived<Record<AchievementCategory, string>>({
+    count: $t('me.categories.count'),
+    geo: $t('me.categories.geo'),
+    time: $t('me.categories.time'),
+    type: $t('me.categories.type'),
+  });
 
   const categories: AchievementCategory[] = ['count', 'geo', 'time', 'type'];
 
@@ -60,10 +61,10 @@
       <section>
         <div class="flex items-baseline justify-between">
           <h2 class="text-lg font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
-            Achievements
+            {$t('me.achievements')}
           </h2>
           <p class="text-sm tabular-nums text-slate-500">
-            {profile.achievements.length} unlocked
+            {$t('trainer.unlockedCount', { count: profile.achievements.length })}
           </p>
         </div>
 

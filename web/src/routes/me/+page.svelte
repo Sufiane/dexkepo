@@ -3,6 +3,7 @@
   import { createQuery } from '@tanstack/svelte-query';
   import type { AchievementCategory } from '@dexkepo/shared';
   import { auth } from '$lib/stores/auth';
+  import { t } from '$lib/i18n/locale';
   import { listDex } from '$lib/api/dex';
   import { listManholes } from '$lib/api/manholes';
   import { listAchievements } from '$lib/api/achievements';
@@ -55,12 +56,12 @@
     return (visited.length / total) * 100;
   });
 
-  const categoryLabels: Record<AchievementCategory, string> = {
-    count: 'Milestones',
-    geo: 'Geography',
-    time: 'Streaks',
-    type: 'Pokémon types',
-  };
+  const categoryLabels = $derived<Record<AchievementCategory, string>>({
+    count: $t('me.categories.count'),
+    geo: $t('me.categories.geo'),
+    time: $t('me.categories.time'),
+    type: $t('me.categories.type'),
+  });
 
   const categories: AchievementCategory[] = ['count', 'geo', 'time', 'type'];
 
@@ -76,13 +77,13 @@
     <div class="mx-auto mt-6 w-full max-w-4xl space-y-6 p-4 pb-12">
     <!-- Hero -->
     <header class="rounded-3xl bg-gradient-to-br from-rose-500 via-red-500 to-orange-500 p-6 text-white shadow-lg">
-      <p class="text-xs font-bold uppercase tracking-[.25em] text-white/85">Trainer</p>
+      <p class="text-xs font-bold uppercase tracking-[.25em] text-white/85">{$t('me.trainerKicker')}</p>
       <h1 class="mt-1 text-3xl font-extrabold">{$auth.user.pseudo}</h1>
       <p class="text-sm text-white/80">{$auth.user.email}</p>
 
       <div class="mt-5 flex items-end gap-3">
         <div>
-          <p class="text-[10px] font-bold uppercase tracking-widest text-white/70">Progress</p>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-white/70">{$t('me.progress')}</p>
           <p class="text-4xl font-extrabold tabular-nums">
             {visited.length}<span class="text-2xl text-white/70"> / {total}</span>
           </p>
@@ -115,7 +116,7 @@
     <!-- Achievements -->
     <section>
       <div class="flex items-baseline justify-between">
-        <h2 class="text-lg font-extrabold tracking-tight text-slate-900 dark:text-slate-100">Achievements</h2>
+        <h2 class="text-lg font-extrabold tracking-tight text-slate-900 dark:text-slate-100">{$t('me.achievements')}</h2>
         <p class="text-sm tabular-nums text-slate-500">
           {achievements.filter((achievement) => achievement.unlocked).length} / {achievements.length}
         </p>
@@ -145,7 +146,7 @@
     <!-- Recent visits -->
     <section>
       <h2 class="text-lg font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
-        Recent visits
+        {$t('me.recentVisits')}
         <span class="ml-1 text-sm font-medium text-slate-500">({visited.length})</span>
       </h2>
 
@@ -153,7 +154,7 @@
         <RecentVisitsSkeleton />
       {:else if visited.length === 0}
         <p class="mt-2 text-sm text-slate-500">
-          No visits yet. Open the map and mark some!
+          {$t('me.noVisits')}
         </p>
       {:else}
         <ul class="mt-2 divide-y divide-slate-200 overflow-hidden rounded-2xl bg-white shadow-sm dark:divide-slate-700 dark:bg-slate-800">
@@ -183,7 +184,7 @@
         </ul>
         {#if visited.length > 25}
           <p class="mt-2 text-xs text-slate-500">
-            Showing the 25 most recent.
+            {$t('me.showingNRecent')}
           </p>
         {/if}
       {/if}

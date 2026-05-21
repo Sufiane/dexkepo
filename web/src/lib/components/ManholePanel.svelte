@@ -5,6 +5,7 @@
   import { markVisited, unmarkVisited } from '../api/dex';
   import { getManhole } from '../api/manholes';
   import { spriteUrl } from '../utils/pokemonSprite';
+  import { t } from '$lib/i18n/locale';
 
   const PIC_BASE = 'https://local.pokemon.jp';
 
@@ -121,7 +122,7 @@
     <button
       class="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
       onclick={onClose}
-      aria-label="close"
+      aria-label={$t('common.close')}
     >
       <svg viewBox="0 0 20 20" class="h-5 w-5" fill="currentColor">
         <path d="M5.28 4.22a.75.75 0 00-1.06 1.06L8.94 10l-4.72 4.72a.75.75 0 101.06 1.06L10 11.06l4.72 4.72a.75.75 0 101.06-1.06L11.06 10l4.72-4.72a.75.75 0 00-1.06-1.06L10 8.94 5.28 4.22z" />
@@ -134,7 +135,7 @@
       type="button"
       onclick={() => (lightboxOpen = true)}
       class="mt-3 block w-full overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200 transition hover:ring-rose-300"
-      aria-label="View cover full-size"
+      aria-label={$t('manholePanel.viewFullSize')}
     >
       <img
         src={PIC_BASE + pictureUrl}
@@ -149,7 +150,7 @@
   {#if pokemonNames.length}
     <div class="mt-4">
       <p class="text-[10px] font-bold uppercase tracking-widest text-slate-500">
-        Featured Pokémon
+        {$t('manholePanel.featured')}
       </p>
       <ul class="mt-2 flex flex-wrap gap-2">
         {#each pokemonNames as pokemonName}
@@ -172,9 +173,9 @@
   {/if}
 
   {#if $detailQ.isLoading}
-    <p class="mt-3 text-sm text-slate-500">Loading details…</p>
+    <p class="mt-3 text-sm text-slate-500">{$t('manholePanel.loadingDetail')}</p>
   {:else if $detailQ.isError}
-    <p class="mt-3 text-sm text-red-600">Failed to load: {($detailQ.error as Error).message}</p>
+    <p class="mt-3 text-sm text-red-600">{$t('manholePanel.loadFailed', { message: ($detailQ.error as Error).message })}</p>
   {:else if $detailQ.data?.address}
     <p class="mt-3 text-sm text-slate-600">
       <span class="font-semibold text-slate-500">📍</span>
@@ -192,7 +193,7 @@
     <svg viewBox="0 0 20 20" class="h-4 w-4" fill="currentColor" aria-hidden="true">
       <path fill-rule="evenodd" d="M10 18s7-6.343 7-11A7 7 0 003 7c0 4.657 7 11 7 11zm0-8a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
     </svg>
-    Open in Google Maps
+    {$t('manholePanel.openGmaps')}
     <svg viewBox="0 0 20 20" class="h-3 w-3" fill="currentColor" aria-hidden="true">
       <path d="M11 3a1 1 0 100 2h2.586L7.293 11.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
       <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
@@ -217,9 +218,9 @@
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
           </svg>
         {:else if visited}
-          ✓ Visited — tap to unmark
+          {$t('manholePanel.unmark')}
         {:else}
-          Mark as visited
+          {$t('manholePanel.mark')}
         {/if}
       </button>
       {#if error}
@@ -230,7 +231,7 @@
         href="/register"
         class="block w-full rounded-xl bg-slate-900 px-4 py-3 text-center text-sm font-bold text-white shadow-md hover:bg-slate-800"
       >
-        Sign up to track your dex
+        {$t('manholePanel.signUpToTrack')}
       </a>
     {/if}
   </div>
@@ -241,7 +242,7 @@
     type="button"
     class="fixed inset-0 z-[2000] flex items-center justify-center bg-black/85 p-4"
     onclick={() => (lightboxOpen = false)}
-    aria-label="Close image"
+    aria-label={$t('manholePanel.closeImage')}
   >
     <img
       src={PIC_BASE + pictureUrl}

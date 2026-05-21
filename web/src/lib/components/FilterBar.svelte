@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { ManholeSummary } from '@dexkepo/shared';
   import { filters } from '../stores/filters';
+  import { t } from '$lib/i18n/locale';
   import PokemonSearch from './PokemonSearch.svelte';
 
   type Props = {
@@ -33,7 +34,7 @@
 >
   <div>
     <div class="flex items-center justify-between">
-      <span class="text-sm font-semibold">Progress</span>
+      <span class="text-sm font-semibold">{$t('filter.progress')}</span>
       <span class="text-sm tabular-nums text-slate-600 dark:text-slate-400">
         {visitedCount} / {totalCount}
       </span>
@@ -51,17 +52,17 @@
   <div class="space-y-1 text-sm">
     <label class="flex items-center gap-2">
       <input type="checkbox" bind:checked={$filters.showVisited} />
-      <span>Show visited (green)</span>
+      <span>{$t('filter.showVisited')}</span>
     </label>
     <label class="flex items-center gap-2">
       <input type="checkbox" bind:checked={$filters.showUnvisited} />
-      <span>Show unvisited (gray)</span>
+      <span>{$t('filter.showUnvisited')}</span>
     </label>
   </div>
 
   <details class="text-sm">
     <summary class="cursor-pointer font-semibold">
-      Prefectures ({$filters.prefectures.length || 'all'})
+      {$t('filter.prefectures')} ({$filters.prefectures.length || $t('filter.all')})
     </summary>
     <div class="mt-2 max-h-56 overflow-y-auto rounded border border-slate-200 p-2 dark:border-slate-700 dark:bg-slate-800/50">
       {#each prefectures as prefecture}
@@ -79,7 +80,7 @@
       <button
         class="mt-1 text-xs text-slate-500 hover:underline dark:text-slate-400"
         onclick={() => filters.update((current) => ({ ...current, prefectures: [] }))}
-      >clear</button>
+      >{$t('filter.clear')}</button>
     {/if}
   </details>
 </aside>

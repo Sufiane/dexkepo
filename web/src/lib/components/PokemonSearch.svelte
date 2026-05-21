@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { ManholeSummary } from '@dexkepo/shared';
   import { filters } from '../stores/filters';
+  import { t } from '$lib/i18n/locale';
   import { spriteUrl } from '../utils/pokemonSprite';
 
   type Suggestion = { name: string; count: number };
@@ -56,12 +57,12 @@
 <div class="relative">
   <label class="block">
     <span class="text-xs font-bold uppercase tracking-widest text-slate-500">
-      Find a Pokémon
+      {$t('pokemonSearch.label')}
     </span>
     <div class="relative mt-1">
       <input
         type="text"
-        placeholder="Pikachu, Eevee…"
+        placeholder={$t('pokemonSearch.placeholder')}
         bind:value={query}
         onfocus={() => (focused = true)}
         onblur={() => setTimeout(() => (focused = false), 120)}
@@ -72,7 +73,7 @@
           type="button"
           onclick={clearSearch}
           class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-          aria-label="Clear search"
+          aria-label={$t('pokemonSearch.clear')}
         >
           <svg viewBox="0 0 20 20" class="h-4 w-4" fill="currentColor">
             <path d="M5.28 4.22a.75.75 0 00-1.06 1.06L8.94 10l-4.72 4.72a.75.75 0 101.06 1.06L10 11.06l4.72 4.72a.75.75 0 101.06-1.06L11.06 10l4.72-4.72a.75.75 0 00-1.06-1.06L10 8.94 5.28 4.22z" />
@@ -103,7 +104,7 @@
             />
             <span class="flex-1 font-medium text-slate-800">{suggestion.name}</span>
             <span class="text-xs tabular-nums text-slate-500">
-              {suggestion.count} cover{suggestion.count === 1 ? '' : 's'}
+              {suggestion.count} {suggestion.count === 1 ? $t('pokemonSearch.coverSingular') : $t('pokemonSearch.coverPlural')}
             </span>
           </button>
         </li>
@@ -125,7 +126,7 @@
         type="button"
         onclick={clearSearch}
         class="ml-1 rounded-full text-rose-700 hover:text-rose-900"
-        aria-label="Clear"
+        aria-label={$t('pokemonSearch.clear')}
       >×</button>
     </div>
   {/if}

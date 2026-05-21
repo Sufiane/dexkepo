@@ -3,6 +3,7 @@
   import { auth, patchUser } from '$lib/stores/auth';
   import { updateProfile } from '$lib/api/users';
   import { spriteUrl } from '$lib/utils/pokemonSprite';
+  import { t } from '$lib/i18n/locale';
 
   type Props = {
     manholes: ManholeSummary[];
@@ -59,7 +60,7 @@
       focused = false;
       onChange?.();
     } catch (err) {
-      errorMsg = err instanceof Error ? err.message : 'Could not save';
+      errorMsg = err instanceof Error ? err.message : $t('me.chosenFavorite.cantSave');
     } finally {
       saving = false;
     }
@@ -71,13 +72,13 @@
          dark:bg-slate-900 dark:ring-amber-700"
 >
   <p class="text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400">
-    👑 Pick your favorite
+    {$t('me.chosenFavorite.kicker')}
   </p>
   <h3 class="mt-1 text-base font-extrabold text-slate-900 dark:text-slate-100">
-    You've caught them all — choose the one that's truly yours
+    {$t('me.chosenFavorite.title')}
   </h3>
   <p class="mt-1 text-xs text-slate-500">
-    Shown on your public profile.
+    {$t('me.chosenFavorite.help')}
   </p>
 
   {#if current}
@@ -91,7 +92,7 @@
       />
       <div class="flex-1">
         <p class="text-[10px] font-bold uppercase tracking-widest text-amber-700 dark:text-amber-300">
-          Current favorite
+          {$t('me.chosenFavorite.current')}
         </p>
         <p class="text-lg font-extrabold text-slate-900 dark:text-slate-100">{current}</p>
       </div>
@@ -101,7 +102,7 @@
         disabled={saving}
         class="rounded-full bg-slate-200 px-3 py-1 text-xs font-bold text-slate-700 hover:bg-slate-300 disabled:opacity-50 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
       >
-        Clear
+        {$t('me.chosenFavorite.clear')}
       </button>
     </div>
   {/if}
@@ -109,7 +110,7 @@
   <div class="relative mt-3">
     <input
       type="text"
-      placeholder={current ? 'Change to…' : 'Pikachu, Eevee…'}
+      placeholder={current ? $t('me.chosenFavorite.changeTo') : $t('me.chosenFavorite.placeholder')}
       bind:value={query}
       onfocus={() => (focused = true)}
       onblur={() => setTimeout(() => (focused = false), 120)}

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { t, locale } from '$lib/i18n/locale';
+
   type Props = {
     pseudo: string;
     memberSince: string;
@@ -13,7 +15,7 @@
   );
 
   const memberDate = $derived(
-    new Date(memberSince).toLocaleDateString(undefined, {
+    new Date(memberSince).toLocaleDateString($locale === 'ja' ? 'ja-JP' : undefined, {
       year: 'numeric',
       month: 'long',
     }),
@@ -21,13 +23,13 @@
 </script>
 
 <header class="rounded-3xl bg-gradient-to-br from-rose-500 via-red-500 to-orange-500 p-6 text-white shadow-lg">
-  <p class="text-xs font-bold uppercase tracking-[.25em] text-white/85">Trainer</p>
+  <p class="text-xs font-bold uppercase tracking-[.25em] text-white/85">{$t('trainer.memberSinceTrainer')}</p>
   <h1 class="mt-1 text-3xl font-extrabold">{pseudo}</h1>
-  <p class="text-sm text-white/80">Member since {memberDate}</p>
+  <p class="text-sm text-white/80">{$t('trainer.memberSince', { date: memberDate })}</p>
 
   <div class="mt-5 flex items-end gap-3">
     <div>
-      <p class="text-[10px] font-bold uppercase tracking-widest text-white/70">Progress</p>
+      <p class="text-[10px] font-bold uppercase tracking-widest text-white/70">{$t('me.progress')}</p>
       <p class="text-4xl font-extrabold tabular-nums">
         {visitedCount}<span class="text-2xl text-white/70"> / {totalCount}</span>
       </p>

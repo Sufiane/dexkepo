@@ -1,8 +1,8 @@
 /**
  * Translation tables. Nested by feature/section.
  *
- * Add string keys flat enough that the same path resolves in both locales —
- * `resolve()` in locale.ts falls back to `en` if a key is missing in `ja`.
+ * `resolve()` in locale.ts falls back to `en` if a key is missing in `ja`,
+ * so partial translations degrade gracefully.
  */
 
 export const en = {
@@ -16,6 +16,7 @@ export const en = {
     clear: 'Clear',
     copy: 'Copy link',
     copied: 'Copied!',
+    close: 'Close',
   },
   header: {
     tagline: 'Pokémon manhole-cover dex',
@@ -36,18 +37,9 @@ export const en = {
     },
     features: {
       heading: 'What you can do',
-      browse: {
-        title: 'Browse all 470',
-        body: 'Filter the map by prefecture or Pokémon.',
-      },
-      mark: {
-        title: 'Mark visits as you go',
-        body: 'Sign up, tap a cover, done.',
-      },
-      achieve: {
-        title: 'Earn achievements',
-        body: 'Streaks, regions, legendaries.',
-      },
+      browse: { title: 'Browse all 470', body: 'Filter the map by prefecture or Pokémon.' },
+      mark: { title: 'Mark visits as you go', body: 'Sign up, tap a cover, done.' },
+      achieve: { title: 'Earn achievements', body: 'Streaks, regions, legendaries.' },
     },
     how: {
       heading: 'How it works',
@@ -75,6 +67,105 @@ export const en = {
     sub404: "Wild {mascot} blocks your path. There's nothing on this route.",
     run: '← Run',
   },
+  filter: {
+    progress: 'Progress',
+    showVisited: 'Show visited (green)',
+    showUnvisited: 'Show unvisited (gray)',
+    prefectures: 'Prefectures',
+    all: 'all',
+    clear: 'clear',
+  },
+  pokemonSearch: {
+    label: 'Find a Pokémon',
+    placeholder: 'Pikachu, Eevee…',
+    coverSingular: 'cover',
+    coverPlural: 'covers',
+    clear: 'Clear search',
+  },
+  manholePanel: {
+    featured: 'Featured Pokémon',
+    loadingDetail: 'Loading details…',
+    loadFailed: 'Failed to load: {message}',
+    openGmaps: 'Open in Google Maps',
+    mark: 'Mark as visited',
+    unmark: '✓ Visited — tap to unmark',
+    signUpToTrack: 'Sign up to track your dex',
+    viewFullSize: 'View cover full-size',
+    closeImage: 'Close image',
+  },
+  auth: {
+    login: {
+      title: 'Log in',
+      email: 'Email',
+      password: 'Password',
+      submit: 'Log in',
+      busy: 'Loading…',
+      noAccount: 'No account?',
+      signUpLink: 'Sign up',
+    },
+    register: {
+      title: 'Sign up',
+      pseudo: 'Username',
+      email: 'Email',
+      passwordHint: 'Password (≥ 8 chars)',
+      submit: 'Create account',
+      busy: 'Loading…',
+      haveAccount: 'Already have one?',
+      loginLink: 'Log in',
+    },
+  },
+  me: {
+    trainerKicker: 'Trainer',
+    progress: 'Progress',
+    achievements: 'Achievements',
+    recentVisits: 'Recent visits',
+    noVisits: 'No visits yet. Open the map and mark some!',
+    showingNRecent: 'Showing the 25 most recent.',
+    categories: {
+      count: 'Milestones',
+      geo: 'Geography',
+      time: 'Streaks',
+      type: 'Pokémon types',
+    },
+    publicProfile: {
+      title: 'Public profile',
+      help: 'Share your dex with a link. Toggle off to keep it private — visitors will see a "not found" page.',
+      toggle: 'Toggle public profile',
+      enableFirst: 'Enable public profile first',
+      copyLink: 'Copy link',
+      copied: 'Copied!',
+      cantSave: 'Could not save',
+      clipboardUnavailable: 'Clipboard unavailable',
+    },
+    chosenFavorite: {
+      kicker: '👑 Pick your favorite',
+      title: "You've caught them all — choose the one that's truly yours",
+      help: 'Shown on your public profile.',
+      current: 'Current favorite',
+      changeTo: 'Change to…',
+      placeholder: 'Pikachu, Eevee…',
+      clear: 'Clear',
+      cantSave: 'Could not save',
+    },
+  },
+  favorites: {
+    title: 'Your favourite Pokémon',
+    empty: 'Mark a few covers to see who your favourite Pokémon really is.',
+    completedAllPlain: "👑 You've visited every cover — they're all your favourites.",
+    chosenKicker: '👑 Self-declared favorite',
+    chosenSubSingular: 'Completed all {count} cover.',
+    chosenSubPlural: 'Completed all {count} covers.',
+  },
+  trainer: {
+    memberSinceTrainer: 'Trainer',
+    memberSince: 'Member since {date}',
+    unlockedCount: '{count} unlocked',
+    notFound: {
+      title: 'This trainer is hiding their dex',
+      sub: "Either the trainer doesn't exist or they've set their profile to private.",
+      cta: 'Back to the map',
+    },
+  },
 };
 
 export type Dictionary = typeof en;
@@ -90,6 +181,7 @@ export const ja: Dictionary = {
     clear: 'クリア',
     copy: 'リンクをコピー',
     copied: 'コピーしました！',
+    close: '閉じる',
   },
   header: {
     tagline: 'ポケモンマンホール図鑑',
@@ -110,18 +202,9 @@ export const ja: Dictionary = {
     },
     features: {
       heading: 'できること',
-      browse: {
-        title: '470枚すべてを見る',
-        body: '都道府県やポケモンで絞り込めます。',
-      },
-      mark: {
-        title: '訪問を記録',
-        body: '登録して、マンホールをタップするだけ。',
-      },
-      achieve: {
-        title: '実績を解除',
-        body: '連続記録、地方、伝説のポケモン。',
-      },
+      browse: { title: '470枚すべてを見る', body: '都道府県やポケモンで絞り込めます。' },
+      mark: { title: '訪問を記録', body: '登録して、マンホールをタップするだけ。' },
+      achieve: { title: '実績を解除', body: '連続記録、地方、伝説のポケモン。' },
     },
     how: {
       heading: '使い方',
@@ -148,6 +231,105 @@ export const ja: Dictionary = {
     headlineCrash: 'きゅうしょに あたった！',
     sub404: '野生の{mascot}が立ちふさがる。このルートには何もない。',
     run: '← にげる',
+  },
+  filter: {
+    progress: '進捗',
+    showVisited: '訪問済みを表示（緑）',
+    showUnvisited: '未訪問を表示（グレー）',
+    prefectures: '都道府県',
+    all: 'すべて',
+    clear: 'クリア',
+  },
+  pokemonSearch: {
+    label: 'ポケモンを検索',
+    placeholder: 'ピカチュウ、イーブイ…',
+    coverSingular: '枚',
+    coverPlural: '枚',
+    clear: '検索をクリア',
+  },
+  manholePanel: {
+    featured: '登場ポケモン',
+    loadingDetail: '詳細を読み込み中…',
+    loadFailed: '読み込みに失敗しました：{message}',
+    openGmaps: 'Google マップで開く',
+    mark: '訪問済みにする',
+    unmark: '✓ 訪問済み — タップで取り消し',
+    signUpToTrack: '登録して図鑑を記録しよう',
+    viewFullSize: '画像を拡大表示',
+    closeImage: '画像を閉じる',
+  },
+  auth: {
+    login: {
+      title: 'ログイン',
+      email: 'メールアドレス',
+      password: 'パスワード',
+      submit: 'ログイン',
+      busy: '読み込み中…',
+      noAccount: 'アカウントをお持ちでない方',
+      signUpLink: '新規登録',
+    },
+    register: {
+      title: '新規登録',
+      pseudo: 'ユーザー名',
+      email: 'メールアドレス',
+      passwordHint: 'パスワード（8文字以上）',
+      submit: 'アカウントを作成',
+      busy: '読み込み中…',
+      haveAccount: 'すでにアカウントをお持ちの方',
+      loginLink: 'ログイン',
+    },
+  },
+  me: {
+    trainerKicker: 'トレーナー',
+    progress: '進捗',
+    achievements: '実績',
+    recentVisits: '最近の訪問',
+    noVisits: 'まだ訪問はありません。マップを開いて記録しましょう！',
+    showingNRecent: '最新の25件を表示中。',
+    categories: {
+      count: 'マイルストーン',
+      geo: '地域',
+      time: '連続記録',
+      type: 'ポケモンタイプ',
+    },
+    publicProfile: {
+      title: '公開プロフィール',
+      help: 'リンクで図鑑をシェアできます。オフにすると、訪問者には「見つかりません」と表示されます。',
+      toggle: '公開プロフィールを切り替え',
+      enableFirst: '先に公開プロフィールを有効にしてください',
+      copyLink: 'リンクをコピー',
+      copied: 'コピーしました！',
+      cantSave: '保存できませんでした',
+      clipboardUnavailable: 'クリップボードが利用できません',
+    },
+    chosenFavorite: {
+      kicker: '👑 お気に入りを選ぶ',
+      title: 'すべて訪問達成！あなたの一番のお気に入りを選びましょう',
+      help: '公開プロフィールに表示されます。',
+      current: '現在のお気に入り',
+      changeTo: '変更する…',
+      placeholder: 'ピカチュウ、イーブイ…',
+      clear: 'クリア',
+      cantSave: '保存できませんでした',
+    },
+  },
+  favorites: {
+    title: 'お気に入りのポケモン',
+    empty: 'マンホールを訪問して、お気に入りを見つけよう。',
+    completedAllPlain: '👑 すべてのマンホールを訪問しました — 全員があなたのお気に入りです。',
+    chosenKicker: '👑 自選お気に入り',
+    chosenSubSingular: '{count}枚すべて訪問済み。',
+    chosenSubPlural: '{count}枚すべて訪問済み。',
+  },
+  trainer: {
+    memberSinceTrainer: 'トレーナー',
+    memberSince: '{date} から',
+    unlockedCount: '{count}個解除',
+    notFound: {
+      title: 'このトレーナーは図鑑を非公開にしています',
+      sub: 'このトレーナーは存在しないか、プロフィールを非公開に設定しています。',
+      cta: 'マップに戻る',
+    },
   },
 };
 
