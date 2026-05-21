@@ -1,12 +1,27 @@
 <script lang="ts">
   import { auth, patchUser } from '$lib/stores/auth';
-  import { updateProfile } from '$lib/api/users';
+  import { getMe, updateProfile } from '$lib/api/users';
 
   let saving = $state(false);
   let copied = $state(false);
   let errorMsg = $state('');
 
-  const isPublic = $derived($auth?.user.publicProfile ?? false);
+  // Stale localStorage from before this feature shipped won't have
+  // `publicProfile` on user. Default to true (server default) so the
+  // copy button isn't wrongly disabled, then re-sync on mount.
+  const isPublic = $derived($auth?.user.publicProfile ?? true);
+
+  $effect(() => {
+    if (!$auth || $auth.user.publicProfile !== undefined) {
+      return;
+    }
+
+    getMe()
+      .then((fresh) => patchUser({ publicProfile: fresh.publicProfile }))
+      .catch(() => {
+        /* non-fatal — toggle still works */
+      });
+  });
   const profileUrl = $derived(
     $auth ? `${location.origin}/trainer/${$auth.user.pseudo}` : '',
   );
