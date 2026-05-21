@@ -1,6 +1,7 @@
 <!-- web/src/lib/components/landing/LandingHero.svelte -->
 <script lang="ts">
   import { auth } from '$lib/stores/auth';
+  import { t } from '$lib/i18n/locale';
 </script>
 
 <section
@@ -27,10 +28,10 @@
 
   <div class="relative max-w-3xl">
     <h1 class="text-4xl font-extrabold leading-tight tracking-tight md:text-6xl">
-      Find every Pokémon manhole cover in Japan.
+      {$t('landing.hero.title')}
     </h1>
     <p class="mt-4 text-base text-white/90 md:text-lg">
-      470 hand-painted poké-fúta. One personal dex. Track what you've visited.
+      {$t('landing.hero.tagline')}
     </p>
   </div>
 
@@ -39,14 +40,14 @@
       href="#map"
       class="rounded-full bg-white px-6 py-3 text-sm font-bold text-rose-600 shadow-lg transition hover:scale-105 hover:bg-rose-50"
     >
-      Open the map ↓
+      {$t('landing.hero.openMap')}
     </a>
     {#if !$auth}
       <a
         href="/register"
         class="rounded-full border-2 border-white/80 px-6 py-3 text-sm font-bold text-white transition hover:bg-white/15"
       >
-        Sign up — track your dex
+        {$t('landing.hero.signUp')}
       </a>
     {/if}
   </div>
@@ -55,7 +56,7 @@
   <a
     href="#map"
     class="absolute bottom-6 text-white/80 transition hover:text-white"
-    aria-label="Scroll to map"
+    aria-label={$t('landing.hero.scrollCue')}
   >
     <svg viewBox="0 0 24 24" class="h-8 w-8 animate-bounce" fill="currentColor" aria-hidden="true">
       <path d="M12 16l-6-6h12l-6 6z" />

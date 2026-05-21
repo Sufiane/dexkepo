@@ -1,9 +1,6 @@
 <!-- web/src/lib/components/landing/MapLoader.svelte -->
 <script lang="ts">
-  // Pure presentation — no props. Centered absolutely so the parent only
-  // needs `position: relative` for the loader to sit on top of (or replace)
-  // the map. The two-level animation (breathe on the outer wrapper, spin on
-  // the inner) composes the transforms cleanly without conflict.
+  import { t } from '$lib/i18n/locale';
 </script>
 
 <div
@@ -29,6 +26,6 @@
   </div>
 
   <p class="text-sm font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">
-    Catching pokémon covers…
+    {$t('map.loaderCaption')}
   </p>
 </div>

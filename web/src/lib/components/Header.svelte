@@ -2,6 +2,8 @@
   import { auth, logout } from '../stores/auth';
   import { theme, toggleTheme } from '../stores/theme';
   import { goto } from '$app/navigation';
+  import { t } from '$lib/i18n/locale';
+  import LangSwitch from './LangSwitch.svelte';
 
   function handleLogout(): void {
     logout();
@@ -26,12 +28,13 @@
     <div class="flex flex-col leading-tight">
       <span class="text-lg font-extrabold tracking-tight">dexkepo</span>
       <span class="text-[10px] uppercase tracking-[.2em] text-white/85 hidden sm:inline">
-        Japan's poké-fúta dex
+        {$t('header.tagline')}
       </span>
     </div>
   </a>
 
-  <nav class="flex items-center gap-3 text-sm">
+  <nav class="flex items-center gap-2 text-sm sm:gap-3">
+    <LangSwitch />
     <button
       type="button"
       onclick={toggleTheme}
@@ -54,9 +57,9 @@
     {#if $auth}
       <a
         href={`/trainer/${$auth.user.pseudo}`}
-        class="text-sm font-semibold text-white/90 hover:text-white"
+        class="hidden text-sm font-semibold text-white/90 hover:text-white sm:inline"
       >
-        Public profile
+        {$t('header.publicProfile')}
       </a>
       <a
         href="/me"
@@ -68,15 +71,17 @@
         class="rounded-full px-3 py-1.5 text-white/90 hover:bg-white/15"
         onclick={handleLogout}
       >
-        logout
+        {$t('header.logout')}
       </button>
     {:else}
-      <a href="/login" class="text-white/90 hover:text-white hover:underline">login</a>
+      <a href="/login" class="text-white/90 hover:text-white hover:underline">
+        {$t('header.login')}
+      </a>
       <a
         href="/register"
         class="rounded-full bg-slate-900 px-4 py-1.5 font-semibold text-white shadow hover:bg-slate-800"
       >
-        sign up
+        {$t('header.register')}
       </a>
     {/if}
   </nav>

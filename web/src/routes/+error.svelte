@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { spriteUrl } from '$lib/utils/pokemonSprite';
+  import { t } from '$lib/i18n/locale';
 
   const status = $derived($page.status);
   const message = $derived($page.error?.message ?? 'Something went wrong');
@@ -10,11 +11,11 @@
   const mascot = $derived(is404 ? 'Psyduck' : 'Voltorb');
   const mascotUrl = $derived(spriteUrl(mascot));
 
-  const headline = $derived(is404 ? "It's not very effective…" : 'Critical hit!');
+  const headline = $derived(
+    is404 ? $t('error.headline404') : $t('error.headlineCrash'),
+  );
   const subline = $derived(
-    is404
-      ? `Wild ${mascot} blocks your path. There's nothing on this route.`
-      : message,
+    is404 ? $t('error.sub404', { mascot }) : message,
   );
 </script>
 
@@ -31,7 +32,7 @@
           class="rounded-full bg-slate-900 px-3 py-1 text-[10px] font-bold uppercase
                  tracking-[.25em] text-white dark:bg-slate-100 dark:text-slate-900"
         >
-          Route {status}
+          {$t('error.route', { status })}
         </span>
         <div class="flex gap-1.5">
           <span class="h-2.5 w-2.5 rounded-full bg-rose-500 shadow-inner"></span>
@@ -74,7 +75,7 @@
           class="flex-1 rounded-full bg-rose-500 px-5 py-2.5 text-center text-sm
                  font-bold text-white shadow hover:bg-rose-600"
         >
-          Back to the map
+          {$t('common.backToMap')}
         </a>
         <button
           type="button"
@@ -83,7 +84,7 @@
                  text-slate-900 hover:bg-slate-300 dark:bg-slate-700
                  dark:text-slate-100 dark:hover:bg-slate-600"
         >
-          ← Run
+          {$t('error.run')}
         </button>
       </div>
     </div>
