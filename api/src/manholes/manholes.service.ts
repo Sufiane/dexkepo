@@ -36,6 +36,8 @@ export class ManholesService {
       lng: row.lng,
       pictureUrl: row.pictureUrl,
       pokemonNames: pokemon.map((entry) => entry.name),
+      nameJa: row.nameJa,
+      prefNameJa: row.prefNameJa,
     };
   }
 }

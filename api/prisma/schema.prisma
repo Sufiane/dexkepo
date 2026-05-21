@@ -32,6 +32,10 @@ model Manhole {
   lng        Float
   pictureUrl String
   pokemon    Json
+  /// Japanese town/city name scraped from local.pokemon.jp og:title.
+  nameJa     String?
+  /// Japanese prefecture name (e.g. 鹿児島県).
+  prefNameJa String?
   dexEntries DexEntry[]
 }
 

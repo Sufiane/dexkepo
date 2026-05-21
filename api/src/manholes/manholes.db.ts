@@ -8,7 +8,7 @@ import { PrismaService } from '../prisma/prisma.service';
  */
 export type ManholeListRow = Pick<
   Manhole,
-  'manholeNo' | 'name' | 'prefEnName' | 'lat' | 'lng' | 'pictureUrl' | 'pokemon'
+  'manholeNo' | 'name' | 'prefEnName' | 'lat' | 'lng' | 'pictureUrl' | 'pokemon' | 'nameJa' | 'prefNameJa'
 >;
 
 /**
@@ -31,6 +31,8 @@ export class ManholesDb {
         lng: true,
         pictureUrl: true,
         pokemon: true,
+        nameJa: true,
+        prefNameJa: true,
       },
     });
   }

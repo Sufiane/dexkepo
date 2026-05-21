@@ -14,6 +14,8 @@ export type Manhole = {
   lng: number;
   pictureUrl: string;
   pokemon: PokemonRef[];
+  nameJa: string | null;
+  prefNameJa: string | null;
 };
 
 // Slim shape returned by GET /manholes (list). Drop heavy fields so the
@@ -29,4 +31,6 @@ export type ManholeSummary = {
   lng: number;
   pictureUrl: string;
   pokemonNames: string[];
+  nameJa: string | null;
+  prefNameJa: string | null;
 };

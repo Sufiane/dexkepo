@@ -13,7 +13,9 @@
   type Props = {
     manholeNo: string;
     name: string;
+    nameJa: string | null;
     prefEnName: string;
+    prefNameJa: string | null;
     pictureUrl: string;
     pokemonNames: string[];
     lat: number;
@@ -26,7 +28,9 @@
   let {
     manholeNo,
     name,
+    nameJa,
     prefEnName,
+    prefNameJa,
     pictureUrl,
     pokemonNames,
     lat,
@@ -35,6 +39,11 @@
     onClose,
     onToggle,
   }: Props = $props();
+
+  const displayName = $derived($locale === 'ja' && nameJa ? nameJa : name);
+  const displayPref = $derived(
+    $locale === 'ja' && prefNameJa ? prefNameJa : localisedPrefecture(prefEnName, $locale),
+  );
 
   // Google Maps "search" URL with raw coordinates — works on web + iOS/Android
   // apps via the universal `maps.google.com` deep-link handler. User lands on
@@ -110,11 +119,11 @@
       <p class="text-xs font-bold uppercase tracking-widest text-rose-500">
         #{manholeNo}
         <span class="ml-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-          {localisedPrefecture(prefEnName, $locale)}
+          {displayPref}
         </span>
       </p>
       <h2 class="mt-1 text-xl font-extrabold leading-tight text-slate-900 dark:text-white">
-        {name}
+        {displayName}
       </h2>
       {#if $detailQ.data?.city}
         <p class="text-sm text-slate-600">{$detailQ.data.city}</p>

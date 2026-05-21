@@ -171,10 +171,12 @@
               {/if}
               <div class="min-w-0 flex-1">
                 <p class="truncate font-semibold text-slate-900 dark:text-slate-100">
-                  #{entry.manholeNo} · {entry.manhole.name}
+                  #{entry.manholeNo} · {$locale === 'ja' && entry.manhole.nameJa ? entry.manhole.nameJa : entry.manhole.name}
                 </p>
                 <p class="truncate text-xs text-slate-500">
-                  {localisedPrefecture(entry.manhole.prefName, $locale)}{entry.manhole.city ? ` · ${entry.manhole.city}` : ''}
+                  {$locale === 'ja' && entry.manhole.prefNameJa
+                    ? entry.manhole.prefNameJa
+                    : localisedPrefecture(entry.manhole.prefName, $locale)}{entry.manhole.city ? ` · ${entry.manhole.city}` : ''}
                 </p>
               </div>
               <span class="text-[11px] tabular-nums text-slate-400">
