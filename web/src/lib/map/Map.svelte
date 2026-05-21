@@ -27,6 +27,8 @@
     justToggledNo: string | null;
     /** Incrementing number that signals "refit map bounds to current data". */
     fitTrigger: number;
+    /** Optional lat/lng to zoom in on. Re-applied whenever the object identity changes. */
+    focus?: { lat: number; lng: number } | null;
     onSelect: (m: ManholeSummary) => void;
   };
 
@@ -37,6 +39,7 @@
     showUnvisited,
     justToggledNo,
     fitTrigger,
+    focus = null,
     onSelect,
   }: Props = $props();
 
@@ -167,6 +170,17 @@
     if (mounted) {
       refresh();
     }
+  });
+
+  // Center on `focus` when it changes (random-pick, deep link, etc.).
+  $effect(() => {
+    const target = focus;
+
+    if (!mounted || !map || !target) {
+      return;
+    }
+
+    map.flyTo([target.lat, target.lng], 14, { duration: 0.6 });
   });
 
   // Swap the tile layer when the user toggles dark mode.

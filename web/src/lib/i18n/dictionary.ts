@@ -79,6 +79,7 @@ export const en = {
     unvisitedOnly: 'Unvisited',
     emptyResult: 'No covers match your filters.',
     clearAll: 'Clear all',
+    randomUnvisited: 'Surprise me',
   },
   pokemonSearch: {
     label: 'Find a Pokémon',
@@ -282,6 +283,7 @@ export const ja: Dictionary = {
     unvisitedOnly: '未訪問のみ',
     emptyResult: '条件に合うマンホールがありません。',
     clearAll: 'すべて解除',
+    randomUnvisited: 'おまかせ',
   },
   pokemonSearch: {
     label: 'ポケモンを検索',

@@ -35,6 +35,7 @@
   let selected: ManholeSummary | null = $state(null);
   let justToggledNo: string | null = $state(null);
   let fitTrigger = $state(0);
+  let focusTarget: { lat: number; lng: number } | null = $state(null);
 
   const all = $derived($manholesQ.data ?? []);
   const visitedSet = $derived(
@@ -113,6 +114,15 @@
       prefectures={prefectures}
       visitedCount={visitedSet.size}
       totalCount={all.length}
+      visitedSet={visitedSet}
+      onPickRandom={(manhole) => {
+        // Clear filters that might hide the chosen cover, fly the map onto
+        // it, and open the panel. New object identity on focusTarget forces
+        // the Map's $effect to re-run even when coords happen to repeat.
+        resetFilters();
+        focusTarget = { lat: manhole.lat, lng: manhole.lng };
+        selected = manhole;
+      }}
     />
 
     <div class="relative min-h-0 flex-1">
@@ -131,6 +141,7 @@
           showUnvisited={$filters.showUnvisited}
           justToggledNo={justToggledNo}
           fitTrigger={fitTrigger}
+          focus={focusTarget}
           onSelect={(manhole) => (selected = manhole)}
         />
         {#if filtered.length === 0 && isFiltered($filters)}

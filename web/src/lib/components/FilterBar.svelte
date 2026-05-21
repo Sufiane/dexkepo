@@ -10,9 +10,32 @@
     prefectures: string[];
     visitedCount: number;
     totalCount: number;
+    visitedSet: Set<string>;
+    onPickRandom: (manhole: ManholeSummary) => void;
   };
 
-  let { manholes, prefectures, visitedCount, totalCount }: Props = $props();
+  let {
+    manholes,
+    prefectures,
+    visitedCount,
+    totalCount,
+    visitedSet,
+    onPickRandom,
+  }: Props = $props();
+
+  const unvisitedCount = $derived(totalCount - visitedCount);
+
+  function pickRandomUnvisited(): void {
+    const unvisited = manholes.filter((m) => !visitedSet.has(m.manholeNo));
+
+    if (unvisited.length === 0) {
+      return;
+    }
+
+    const index = Math.floor(Math.random() * unvisited.length);
+
+    onPickRandom(unvisited[index]);
+  }
 
   function togglePref(name: string): void {
     filters.update((current) => {
@@ -49,6 +72,15 @@
   </div>
 
   <PokemonSearch manholes={manholes} />
+
+  <button
+    type="button"
+    onclick={pickRandomUnvisited}
+    disabled={unvisitedCount === 0}
+    class="flex items-center justify-center gap-2 rounded-full bg-rose-500 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-rose-600 disabled:cursor-not-allowed disabled:opacity-50"
+  >
+    🎲 {$t('filter.randomUnvisited')}
+  </button>
 
   <div class="space-y-1 text-sm">
     <label class="flex items-center gap-2">
