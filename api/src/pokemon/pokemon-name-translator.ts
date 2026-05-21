@@ -1,37 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { Locale } from '../common/locale';
 import { PokemonDb } from './pokemon.db';
 
 /**
- * Builds a name-translation map from the Pokemon catalogue.
+ * Builds name-translation maps from the Pokemon catalogue.
  *
  * Three services (manholes, dex, favorites) all needed the same EN→JA
  * lookup to localise pokemon names in their responses; this is the single
- * source of truth. Result is cached for a short window so callers within a
- * request — and back-to-back requests on the same warm container — don't
- * re-query the table on every hit.
+ * source of truth. Result is cached for a short window so back-to-back
+ * requests on the same warm container don't re-query the table on every hit.
+ *
+ * Callers gate by locale themselves — keeps method names truthful (no
+ * `enToJa('en')` shenanigans).
  */
 const CACHE_TTL_MS = 5 * 60_000;
 
 @Injectable()
 export class PokemonNameTranslator {
-  private cache: { value: Map<string, string>; expires: number } | null = null;
+  private enToJaCache: { value: Map<string, string>; expires: number } | null = null;
+  private jaToEnCache: { value: Map<string, string>; expires: number } | null = null;
 
   constructor(private db: PokemonDb) {}
 
-  /**
-   * Returns a Map<en, ja>. Empty map for the EN locale (callers can skip the
-   * lookup with `if (locale === 'en') return name;`).
-   */
-  async enToJa(locale: Locale): Promise<Map<string, string>> {
-    if (locale === 'en') {
-      return new Map();
-    }
-
+  /** Map<en, ja>. Skip the call if you don't need JA — don't ask for the map. */
+  async enToJa(): Promise<Map<string, string>> {
     const now = Date.now();
 
-    if (this.cache && this.cache.expires > now) {
-      return this.cache.value;
+    if (this.enToJaCache && this.enToJaCache.expires > now) {
+      return this.enToJaCache.value;
     }
 
     const rows = await this.db.findAll();
@@ -43,22 +38,27 @@ export class PokemonNameTranslator {
       }
     }
 
-    this.cache = { value: map, expires: now + CACHE_TTL_MS };
+    this.enToJaCache = { value: map, expires: now + CACHE_TTL_MS };
 
     return map;
   }
 
-  /**
-   * Inverse — JA name back to EN canonical. Used by UsersService to
-   * normalise `chosenFavorite` on write so the DB always stores EN.
-   */
+  /** Map<ja, en>. Used to normalise incoming JA names to canonical EN on write. */
   async jaToEn(): Promise<Map<string, string>> {
-    const enToJa = await this.enToJa('ja');
+    const now = Date.now();
+
+    if (this.jaToEnCache && this.jaToEnCache.expires > now) {
+      return this.jaToEnCache.value;
+    }
+
+    const enToJa = await this.enToJa();
     const inverse = new Map<string, string>();
 
     for (const [en, ja] of enToJa) {
       inverse.set(ja, en);
     }
+
+    this.jaToEnCache = { value: inverse, expires: now + CACHE_TTL_MS };
 
     return inverse;
   }

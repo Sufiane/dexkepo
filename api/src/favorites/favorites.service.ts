@@ -88,7 +88,7 @@ export class FavoritesService {
       return response;
     }
 
-    const jaByName = await this.translator.enToJa(locale);
+    const jaByName = await this.translator.enToJa();
 
     return {
       ...response,

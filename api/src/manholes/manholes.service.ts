@@ -7,6 +7,8 @@ import { ManholesDb, ManholeListRow } from './manholes.db';
 
 type PokemonJson = { name: string; zukan_url: string };
 
+const EMPTY_MAP: Map<string, string> = new Map();
+
 @Injectable()
 export class ManholesService {
   constructor(
@@ -21,7 +23,7 @@ export class ManholesService {
   async list(locale: Locale = 'en', pref?: string): Promise<ManholeSummary[]> {
     const [rows, pokemonNameJa] = await Promise.all([
       this.db.findAll(pref),
-      this.translator.enToJa(locale),
+      locale === 'ja' ? this.translator.enToJa() : Promise.resolve(EMPTY_MAP),
     ]);
 
     return rows.map((row) => this.toSummary(row, locale, pokemonNameJa));
@@ -30,7 +32,7 @@ export class ManholesService {
   async one(locale: Locale, manholeNo: string): Promise<Manhole> {
     const [row, pokemonNameJa] = await Promise.all([
       this.db.findOne(manholeNo),
-      this.translator.enToJa(locale),
+      locale === 'ja' ? this.translator.enToJa() : Promise.resolve(EMPTY_MAP),
     ]);
 
     if (!row) {

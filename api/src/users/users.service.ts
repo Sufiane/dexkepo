@@ -40,7 +40,7 @@ export class UsersService {
     }
 
     const incoming = patch.chosenFavorite;
-    const enToJa = await this.translator.enToJa('ja');
+    const enToJa = await this.translator.enToJa();
 
     // Direct EN match wins (no work to do).
     if (enToJa.has(incoming)) {
