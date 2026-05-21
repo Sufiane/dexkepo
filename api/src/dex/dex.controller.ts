@@ -1,10 +1,11 @@
-import { Controller, Delete, Get, Headers, HttpCode, Param, Post, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, HttpCode, Param, Post, UseGuards } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
 import { DexEntry } from '@prisma/client';
 import { JwtAuthGuard } from '../common/jwt-auth.guard';
 import { UserThrottlerGuard } from '../common/user-throttler.guard';
 import { AuthUser, CurrentUser } from '../common/current-user.decorator';
-import { parseLocale } from '../common/locale';
+import { Locale } from '../common/locale';
+import { RequestLocale } from '../common/locale.decorator';
 import { DexService } from './dex.service';
 import { LocalisedDexEntry } from './dex.types';
 
@@ -20,9 +21,9 @@ export class DexController {
   @Get()
   list(
     @CurrentUser() user: AuthUser,
-    @Headers('accept-language') acceptLanguage: string | undefined,
+    @RequestLocale() locale: Locale,
   ): Promise<LocalisedDexEntry[]> {
-    return this.svc.list(user.id, parseLocale(acceptLanguage));
+    return this.svc.list(user.id, locale);
   }
 
   @Post(':manholeNo')

@@ -1,6 +1,8 @@
-import { Controller, Get, Headers, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { Manhole, ManholeSummary } from '@dexkepo/shared';
-import { parseLocale } from '../common/locale';
+import { Locale } from '../common/locale';
+import { RequestLocale } from '../common/locale.decorator';
+import { ListManholesQuery } from './dto/list-manholes.dto';
 import { ManholesService } from './manholes.service';
 
 @Controller('manholes')
@@ -9,17 +11,17 @@ export class ManholesController {
 
   @Get()
   list(
-    @Headers('accept-language') acceptLanguage: string | undefined,
-    @Query('pref') pref?: string,
+    @RequestLocale() locale: Locale,
+    @Query() query: ListManholesQuery,
   ): Promise<ManholeSummary[]> {
-    return this.svc.list(parseLocale(acceptLanguage), pref);
+    return this.svc.list(locale, query.pref);
   }
 
   @Get(':manholeNo')
   one(
-    @Headers('accept-language') acceptLanguage: string | undefined,
+    @RequestLocale() locale: Locale,
     @Param('manholeNo') manholeNo: string,
   ): Promise<Manhole> {
-    return this.svc.one(parseLocale(acceptLanguage), manholeNo);
+    return this.svc.one(locale, manholeNo);
   }
 }

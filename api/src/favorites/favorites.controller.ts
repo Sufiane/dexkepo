@@ -1,8 +1,9 @@
-import { Controller, Get, Headers, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { FavoritesResponse } from '@dexkepo/shared';
 import { JwtAuthGuard } from '../common/jwt-auth.guard';
 import { AuthUser, CurrentUser } from '../common/current-user.decorator';
-import { parseLocale } from '../common/locale';
+import { Locale } from '../common/locale';
+import { RequestLocale } from '../common/locale.decorator';
 import { FavoritesService } from './favorites.service';
 
 @UseGuards(JwtAuthGuard)
@@ -13,8 +14,8 @@ export class FavoritesController {
   @Get()
   list(
     @CurrentUser() user: AuthUser,
-    @Headers('accept-language') acceptLanguage: string | undefined,
+    @RequestLocale() locale: Locale,
   ): Promise<FavoritesResponse> {
-    return this.svc.listForUser(user.id, parseLocale(acceptLanguage));
+    return this.svc.listForUser(user.id, locale);
   }
 }

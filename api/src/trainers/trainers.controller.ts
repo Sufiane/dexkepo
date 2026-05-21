@@ -1,8 +1,9 @@
-import { Controller, Get, Headers, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
 import { TrainerProfile } from '@dexkepo/shared';
 import { TrainerPublicThrottlerGuard } from '../common/trainer-public-throttler.guard';
-import { parseLocale } from '../common/locale';
+import { Locale } from '../common/locale';
+import { RequestLocale } from '../common/locale.decorator';
 import { TrainersService } from './trainers.service';
 
 @Controller('trainers')
@@ -13,9 +14,9 @@ export class TrainersController {
 
   @Get(':pseudo')
   one(
-    @Headers('accept-language') acceptLanguage: string | undefined,
+    @RequestLocale() locale: Locale,
     @Param('pseudo') pseudo: string,
   ): Promise<TrainerProfile> {
-    return this.svc.profile(pseudo, parseLocale(acceptLanguage));
+    return this.svc.profile(pseudo, locale);
   }
 }
