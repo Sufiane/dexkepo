@@ -111,6 +111,8 @@
         icon: buildMarkerIcon({
           pokemonNames: manhole.pokemonNames,
           visited,
+          hasLegendary: manhole.hasLegendary,
+          hasMythical: manhole.hasMythical,
           justToggled: manhole.manholeNo === justToggledNo,
         }),
       });

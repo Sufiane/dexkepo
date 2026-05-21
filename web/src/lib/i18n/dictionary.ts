@@ -92,6 +92,8 @@ export const en = {
     signUpToTrack: 'Sign up to track your dex',
     viewFullSize: 'View cover full-size',
     closeImage: 'Close image',
+    legendary: 'Legendary',
+    mythical: 'Mythical',
   },
   auth: {
     login: {
@@ -279,6 +281,8 @@ export const ja: Dictionary = {
     signUpToTrack: '登録して図鑑を記録しよう',
     viewFullSize: '画像を拡大表示',
     closeImage: '画像を閉じる',
+    legendary: '伝説',
+    mythical: '幻',
   },
   auth: {
     login: {

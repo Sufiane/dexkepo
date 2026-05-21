@@ -153,17 +153,52 @@
     </button>
   {/if}
 
-  <!-- Pokemon featured: each as sprite + name chip -->
-  {#if pokemonNames.length}
+  <!-- Pokemon featured: each as sprite + name chip + rarity tag.
+       Detail query carries rarity flags; while it loads we render the slim
+       summary names so the panel isn't empty. -->
+  {#if $detailQ.data?.pokemon?.length}
+    <div class="mt-4">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+        {$t('manholePanel.featured')}
+      </p>
+      <ul class="mt-2 flex flex-wrap gap-2">
+        {#each $detailQ.data.pokemon as pokemonEntry (pokemonEntry.name)}
+          {@const rarityClass = pokemonEntry.isMythical
+            ? 'bg-pink-100 ring-1 ring-pink-300 text-pink-900 dark:bg-pink-950/40 dark:ring-pink-700 dark:text-pink-100'
+            : pokemonEntry.isLegendary
+              ? 'bg-amber-100 ring-1 ring-amber-300 text-amber-900 dark:bg-amber-950/40 dark:ring-amber-700 dark:text-amber-100'
+              : 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200'}
+          <li class={`flex items-center gap-1.5 rounded-full py-1 pl-1 pr-3 text-sm font-medium ${rarityClass}`}>
+            <img
+              src={spriteUrl(pokemonEntry.name)}
+              alt=""
+              class="h-7 w-7 object-contain"
+              loading="lazy"
+              style="image-rendering: pixelated;"
+              onerror={(e) => ((e.currentTarget as HTMLImageElement).style.visibility = 'hidden')}
+            />
+            <span>{pokemonEntry.name}</span>
+            {#if pokemonEntry.isMythical}
+              <span class="rounded-full bg-pink-500 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
+                {$t('manholePanel.mythical')}
+              </span>
+            {:else if pokemonEntry.isLegendary}
+              <span class="rounded-full bg-amber-500 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
+                {$t('manholePanel.legendary')}
+              </span>
+            {/if}
+          </li>
+        {/each}
+      </ul>
+    </div>
+  {:else if pokemonNames.length}
     <div class="mt-4">
       <p class="text-[10px] font-bold uppercase tracking-widest text-slate-500">
         {$t('manholePanel.featured')}
       </p>
       <ul class="mt-2 flex flex-wrap gap-2">
         {#each pokemonNames as pokemonName}
-          <li
-            class="flex items-center gap-1.5 rounded-full bg-slate-100 py-1 pl-1 pr-3 text-sm font-medium text-slate-800 dark:bg-slate-800 dark:text-slate-200"
-          >
+          <li class="flex items-center gap-1.5 rounded-full bg-slate-100 py-1 pl-1 pr-3 text-sm font-medium text-slate-800 dark:bg-slate-800 dark:text-slate-200">
             <img
               src={spriteUrl(pokemonName)}
               alt=""

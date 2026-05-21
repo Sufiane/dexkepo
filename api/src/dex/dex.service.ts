@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DexEntry } from '@prisma/client';
 import { Manhole, PokemonRef } from '@dexkepo/shared';
 import { Locale } from '../common/locale';
-import { PokemonNameTranslator } from '../pokemon/pokemon-name-translator';
+import { PokemonService } from '../pokemon/pokemon.service';
 import { DexDb, DexEntryWithManhole } from './dex.db';
 import { LocalisedDexEntry } from './dex.types';
 
@@ -12,7 +12,7 @@ type PokemonJson = { name: string; zukan_url: string };
 export class DexService {
   constructor(
     private db: DexDb,
-    private translator: PokemonNameTranslator,
+    private translator: PokemonService,
   ) {}
 
   /**
@@ -67,12 +67,19 @@ export class DexService {
       lng: row.lng,
       pictureUrl: row.pictureUrl,
       pokemon: await Promise.all(
-        pokemon.map(
-          async (entry): Promise<PokemonRef> => ({
-            name: await this.translator.translate(entry.name, locale),
+        pokemon.map(async (entry): Promise<PokemonRef> => {
+          const [name, rarity] = await Promise.all([
+            this.translator.translate(entry.name, locale),
+            this.translator.getRarity(entry.name),
+          ]);
+
+          return {
+            name,
             zukan_url: entry.zukan_url,
-          }),
-        ),
+            isLegendary: rarity.isLegendary,
+            isMythical: rarity.isMythical,
+          };
+        }),
       ),
     };
   }

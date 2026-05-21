@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PokemonDb } from './pokemon.db';
-import { PokemonNameTranslator } from './pokemon-name-translator';
+import { PokemonService } from './pokemon.service';
 
 /**
  * Catalogue of all featured Pokemon with their localised names + types.
@@ -8,7 +8,7 @@ import { PokemonNameTranslator } from './pokemon-name-translator';
  * `prisma/enrich-pokemon-ja.ts`.
  */
 @Module({
-  providers: [PokemonDb, PokemonNameTranslator],
-  exports: [PokemonDb, PokemonNameTranslator],
+  providers: [PokemonDb, PokemonService],
+  exports: [PokemonDb, PokemonService],
 })
 export class PokemonModule {}

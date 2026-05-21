@@ -66,6 +66,25 @@ html.dark, html.dark body {
   border-color: #cbd5e1; /* slate-300 */
 }
 
+/* Legendary covers (Mewtwo, Lugia, …): warm-gold ring + halo. Stacks ON TOP of
+   the visited/unvisited tint so visited-legendary still reads green-inside. */
+.dx-ring-legendary {
+  border-color: #f59e0b; /* amber-500 */
+  box-shadow:
+    0 0 0 3px rgba(245, 158, 11, .35),
+    0 0 12px rgba(245, 158, 11, .55),
+    0 2px 6px rgba(0, 0, 0, .35);
+}
+
+/* Mythical covers (Mew, Celebi, …): pink-magenta halo. */
+.dx-ring-mythical {
+  border-color: #ec4899; /* pink-500 */
+  box-shadow:
+    0 0 0 3px rgba(236, 72, 153, .35),
+    0 0 12px rgba(236, 72, 153, .6),
+    0 2px 6px rgba(0, 0, 0, .35);
+}
+
 .dx-sprite {
   width: 38px;
   height: 38px;

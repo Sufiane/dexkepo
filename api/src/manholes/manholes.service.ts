@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Manhole as PrismaManhole } from '@prisma/client';
 import { Manhole, ManholeSummary, PokemonRef } from '@dexkepo/shared';
 import { Locale } from '../common/locale';
-import { PokemonNameTranslator } from '../pokemon/pokemon-name-translator';
+import { PokemonService } from '../pokemon/pokemon.service';
 import { ManholesDb, ManholeListRow } from './manholes.db';
 
 type PokemonJson = { name: string; zukan_url: string };
@@ -11,13 +11,9 @@ type PokemonJson = { name: string; zukan_url: string };
 export class ManholesService {
   constructor(
     private db: ManholesDb,
-    private translator: PokemonNameTranslator,
+    private pokemonSvc: PokemonService,
   ) {}
 
-  /**
-   * Localised list. Falls back to English values when a JA translation
-   * is missing on a given row (e.g. #448 PokéPark KANTO has no scraped JA).
-   */
   async list(locale: Locale = 'en', pref?: string): Promise<ManholeSummary[]> {
     const rows = await this.db.findAll(pref);
 
@@ -45,6 +41,9 @@ export class ManholesService {
 
   private async toSummary(row: ManholeListRow, locale: Locale): Promise<ManholeSummary> {
     const pokemon = (row.pokemon as unknown as PokemonJson[]) ?? [];
+    const rarities = await Promise.all(
+      pokemon.map((entry) => this.pokemonSvc.getRarity(entry.name)),
+    );
 
     return {
       manholeNo: row.manholeNo,
@@ -54,8 +53,10 @@ export class ManholesService {
       lng: row.lng,
       pictureUrl: row.pictureUrl,
       pokemonNames: await Promise.all(
-        pokemon.map((entry) => this.translator.translate(entry.name, locale)),
+        pokemon.map((entry) => this.pokemonSvc.translate(entry.name, locale)),
       ),
+      hasLegendary: rarities.some((rarity) => rarity.isLegendary),
+      hasMythical: rarities.some((rarity) => rarity.isMythical),
     };
   }
 
@@ -73,12 +74,19 @@ export class ManholesService {
       lng: row.lng,
       pictureUrl: row.pictureUrl,
       pokemon: await Promise.all(
-        pokemon.map(
-          async (entry): Promise<PokemonRef> => ({
-            name: await this.translator.translate(entry.name, locale),
+        pokemon.map(async (entry): Promise<PokemonRef> => {
+          const [name, rarity] = await Promise.all([
+            this.pokemonSvc.translate(entry.name, locale),
+            this.pokemonSvc.getRarity(entry.name),
+          ]);
+
+          return {
+            name,
             zukan_url: entry.zukan_url,
-          }),
-        ),
+            isLegendary: rarity.isLegendary,
+            isMythical: rarity.isMythical,
+          };
+        }),
       ),
     };
   }

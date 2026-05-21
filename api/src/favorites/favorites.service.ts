@@ -4,7 +4,7 @@ import { Locale } from '../common/locale';
 import { DexService } from '../dex/dex.service';
 import { ManholesService } from '../manholes/manholes.service';
 import { UsersService } from '../users/users.service';
-import { PokemonNameTranslator } from '../pokemon/pokemon-name-translator';
+import { PokemonService } from '../pokemon/pokemon.service';
 
 /** How many favorites to expose in the leaderboard. */
 const TOP_N = 3;
@@ -17,7 +17,7 @@ export class FavoritesService {
     private dexSvc: DexService,
     private manholesSvc: ManholesService,
     private usersSvc: UsersService,
-    private translator: PokemonNameTranslator,
+    private translator: PokemonService,
   ) {}
 
   async listForUser(userId: string, locale: Locale = 'en'): Promise<FavoritesResponse> {

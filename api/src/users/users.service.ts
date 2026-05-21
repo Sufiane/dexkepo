@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserPublic } from '@dexkepo/shared';
-import { PokemonNameTranslator } from '../pokemon/pokemon-name-translator';
+import { PokemonService } from '../pokemon/pokemon.service';
 import { UserRow, UsersDb, UserProfilePatch } from './users.db';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 
@@ -8,7 +8,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 export class UsersService {
   constructor(
     private db: UsersDb,
-    private translator: PokemonNameTranslator,
+    private translator: PokemonService,
   ) {}
 
   async me(id: string): Promise<UserPublic> {

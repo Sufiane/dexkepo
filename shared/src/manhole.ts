@@ -1,6 +1,10 @@
 export type PokemonRef = {
   name: string;
   zukan_url: string;
+  /** True for legendary species (Mewtwo, Lugia, …). UI flags these on the panel. */
+  isLegendary: boolean;
+  /** True for mythical species (Mew, Celebi, …). */
+  isMythical: boolean;
 };
 
 /**
@@ -28,6 +32,9 @@ export type Manhole = {
  *
  * `prefEnName` stays canonical (English slug) because it is used as a filter
  * key in the URL/state and must round-trip stably across locales.
+ *
+ * `hasLegendary` / `hasMythical` are pre-computed at the API so the map
+ * marker can pick a special colour without needing per-cover detail.
  */
 export type ManholeSummary = {
   manholeNo: string;
@@ -37,4 +44,6 @@ export type ManholeSummary = {
   lng: number;
   pictureUrl: string;
   pokemonNames: string[];
+  hasLegendary: boolean;
+  hasMythical: boolean;
 };
