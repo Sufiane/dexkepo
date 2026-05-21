@@ -84,15 +84,17 @@ export class FavoritesService {
     response: FavoritesResponse,
     locale: Locale,
   ): Promise<FavoritesResponse> {
-    const localiseName = await this.translator.forLocale(locale);
-
     return {
       ...response,
-      favorites: response.favorites.map((entry) => ({
-        ...entry,
-        name: localiseName(entry.name),
-      })),
-      chosenFavorite: response.chosenFavorite ? localiseName(response.chosenFavorite) : null,
+      favorites: await Promise.all(
+        response.favorites.map(async (entry) => ({
+          ...entry,
+          name: await this.translator.translate(entry.name, locale),
+        })),
+      ),
+      chosenFavorite: response.chosenFavorite
+        ? await this.translator.translate(response.chosenFavorite, locale)
+        : null,
     };
   }
 }

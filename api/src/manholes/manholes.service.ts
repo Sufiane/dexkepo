@@ -2,10 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Manhole as PrismaManhole } from '@prisma/client';
 import { Manhole, ManholeSummary, PokemonRef } from '@dexkepo/shared';
 import { Locale } from '../common/locale';
-import {
-  PokemonNameLocaliser,
-  PokemonNameTranslator,
-} from '../pokemon/pokemon-name-translator';
+import { PokemonNameTranslator } from '../pokemon/pokemon-name-translator';
 import { ManholesDb, ManholeListRow } from './manholes.db';
 
 type PokemonJson = { name: string; zukan_url: string };
@@ -22,25 +19,19 @@ export class ManholesService {
    * is missing on a given row (e.g. #448 PokéPark KANTO has no scraped JA).
    */
   async list(locale: Locale = 'en', pref?: string): Promise<ManholeSummary[]> {
-    const [rows, localisePokemon] = await Promise.all([
-      this.db.findAll(pref),
-      this.translator.forLocale(locale),
-    ]);
+    const rows = await this.db.findAll(pref);
 
-    return rows.map((row) => this.toSummary(row, locale, localisePokemon));
+    return Promise.all(rows.map((row) => this.toSummary(row, locale)));
   }
 
   async one(locale: Locale, manholeNo: string): Promise<Manhole> {
-    const [row, localisePokemon] = await Promise.all([
-      this.db.findOne(manholeNo),
-      this.translator.forLocale(locale),
-    ]);
+    const row = await this.db.findOne(manholeNo);
 
     if (!row) {
       throw new NotFoundException();
     }
 
-    return this.toDetail(row, locale, localisePokemon);
+    return this.toDetail(row, locale);
   }
 
   /**
@@ -52,11 +43,7 @@ export class ManholesService {
     return this.db.findAll();
   }
 
-  private toSummary(
-    row: ManholeListRow,
-    locale: Locale,
-    localisePokemon: PokemonNameLocaliser,
-  ): ManholeSummary {
+  private async toSummary(row: ManholeListRow, locale: Locale): Promise<ManholeSummary> {
     const pokemon = (row.pokemon as unknown as PokemonJson[]) ?? [];
 
     return {
@@ -66,15 +53,13 @@ export class ManholesService {
       lat: row.lat,
       lng: row.lng,
       pictureUrl: row.pictureUrl,
-      pokemonNames: pokemon.map((entry) => localisePokemon(entry.name)),
+      pokemonNames: await Promise.all(
+        pokemon.map((entry) => this.translator.translate(entry.name, locale)),
+      ),
     };
   }
 
-  private toDetail(
-    row: PrismaManhole,
-    locale: Locale,
-    localisePokemon: PokemonNameLocaliser,
-  ): Manhole {
+  private async toDetail(row: PrismaManhole, locale: Locale): Promise<Manhole> {
     const pokemon = (row.pokemon as unknown as PokemonJson[]) ?? [];
 
     return {
@@ -87,11 +72,13 @@ export class ManholesService {
       lat: row.lat,
       lng: row.lng,
       pictureUrl: row.pictureUrl,
-      pokemon: pokemon.map(
-        (entry): PokemonRef => ({
-          name: localisePokemon(entry.name),
-          zukan_url: entry.zukan_url,
-        }),
+      pokemon: await Promise.all(
+        pokemon.map(
+          async (entry): Promise<PokemonRef> => ({
+            name: await this.translator.translate(entry.name, locale),
+            zukan_url: entry.zukan_url,
+          }),
+        ),
       ),
     };
   }

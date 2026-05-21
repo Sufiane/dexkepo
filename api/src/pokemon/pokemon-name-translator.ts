@@ -3,21 +3,18 @@ import { Locale } from '../common/locale';
 import { PokemonDb } from './pokemon.db';
 
 /**
- * Localises canonical (EN) Pokémon names to the requested locale.
+ * Translates Pokémon names between locales.
  *
- * Callers fetch a bound localiser once per request and apply it to each
- * name. For EN the localiser is the identity function; for JA it looks up
- * the Pokemon catalogue. Falling back to the input string is the
- * translator's job, so call sites are just `localise(entry.name)`.
+ * Two-method public API:
+ *   - {@link translate}: canonical EN → display name in the target locale
+ *     (identity for EN, katakana for JA, falls back to input if unknown).
+ *   - {@link toCanonical}: anything → canonical EN (used by write paths
+ *     so the DB stays single-language).
  *
- * Cached for a short window so concurrent / back-to-back requests on the
- * same warm container don't re-query the table per hit.
+ * Catalogue maps are cached for a short window so back-to-back calls on the
+ * same warm container don't re-query the Pokemon table.
  */
 const CACHE_TTL_MS = 5 * 60_000;
-
-export type PokemonNameLocaliser = (name: string) => string;
-
-const IDENTITY: PokemonNameLocaliser = (name) => name;
 
 @Injectable()
 export class PokemonNameTranslator {
@@ -27,47 +24,37 @@ export class PokemonNameTranslator {
   constructor(private db: PokemonDb) {}
 
   /**
-   * Returns a function that localises one EN name into the target locale.
-   * Use it as a per-request boundary — fetch once, apply many times.
+   * Display name in the given locale.
+   *
+   * Bulk usage: `await Promise.all(names.map(n => translator.translate(n, locale)))`.
+   * After the first hit the catalogue is cached, so subsequent calls within
+   * the same request resolve from memory.
    */
-  async forLocale(locale: Locale): Promise<PokemonNameLocaliser> {
+  async translate(name: string, locale: Locale): Promise<string> {
     if (locale === 'en') {
-      return IDENTITY;
+      return name;
     }
 
     const map = await this.enToJa();
 
-    return (name) => map.get(name) ?? name;
-  }
-
-  /** JA → EN canonical. Used by UsersService to normalise on write. */
-  async jaToEn(): Promise<Map<string, string>> {
-    const now = Date.now();
-
-    if (this.jaToEnCache && this.jaToEnCache.expires > now) {
-      return this.jaToEnCache.value;
-    }
-
-    const enToJa = await this.enToJa();
-    const inverse = new Map<string, string>();
-
-    for (const [en, ja] of enToJa) {
-      inverse.set(ja, en);
-    }
-
-    this.jaToEnCache = { value: inverse, expires: now + CACHE_TTL_MS };
-
-    return inverse;
+    return map.get(name) ?? name;
   }
 
   /**
-   * Whether a given string is a known canonical (EN) name. Lets write paths
-   * decide whether to reverse-translate or accept the value as-is.
+   * Canonical (EN) form of any input. Accepts both EN and JA names; unknown
+   * strings pass through unchanged so the DB can still hold them (typo,
+   * post-enrichment additions).
    */
-  async isCanonical(name: string): Promise<boolean> {
-    const map = await this.enToJa();
+  async toCanonical(name: string): Promise<string> {
+    const enToJa = await this.enToJa();
 
-    return map.has(name);
+    if (enToJa.has(name)) {
+      return name;
+    }
+
+    const jaToEn = await this.jaToEn();
+
+    return jaToEn.get(name) ?? name;
   }
 
   private async enToJa(): Promise<Map<string, string>> {
@@ -89,5 +76,24 @@ export class PokemonNameTranslator {
     this.enToJaCache = { value: map, expires: now + CACHE_TTL_MS };
 
     return map;
+  }
+
+  private async jaToEn(): Promise<Map<string, string>> {
+    const now = Date.now();
+
+    if (this.jaToEnCache && this.jaToEnCache.expires > now) {
+      return this.jaToEnCache.value;
+    }
+
+    const enToJa = await this.enToJa();
+    const inverse = new Map<string, string>();
+
+    for (const [en, ja] of enToJa) {
+      inverse.set(ja, en);
+    }
+
+    this.jaToEnCache = { value: inverse, expires: now + CACHE_TTL_MS };
+
+    return inverse;
   }
 }

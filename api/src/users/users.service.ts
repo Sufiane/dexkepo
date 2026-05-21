@@ -39,24 +39,9 @@ export class UsersService {
       return patch;
     }
 
-    const incoming = patch.chosenFavorite;
+    const canonical = await this.translator.toCanonical(patch.chosenFavorite);
 
-    // Direct EN match wins (no work to do).
-    if (await this.translator.isCanonical(incoming)) {
-      return patch;
-    }
-
-    // JA → EN reverse lookup.
-    const jaToEn = await this.translator.jaToEn();
-    const enMatch = jaToEn.get(incoming);
-
-    if (enMatch) {
-      return { ...patch, chosenFavorite: enMatch };
-    }
-
-    // Unknown name — let it through. Either a typo (user will see no display
-    // sprite) or a name added to the catalogue after enrichment ran.
-    return patch;
+    return { ...patch, chosenFavorite: canonical };
   }
 }
 

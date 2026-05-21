@@ -2,10 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DexEntry } from '@prisma/client';
 import { Manhole, PokemonRef } from '@dexkepo/shared';
 import { Locale } from '../common/locale';
-import {
-  PokemonNameLocaliser,
-  PokemonNameTranslator,
-} from '../pokemon/pokemon-name-translator';
+import { PokemonNameTranslator } from '../pokemon/pokemon-name-translator';
 import { DexDb, DexEntryWithManhole } from './dex.db';
 import { LocalisedDexEntry } from './dex.types';
 
@@ -22,17 +19,16 @@ export class DexService {
    * Localised list for the public API. Internal callers use {@link listRaw}.
    */
   async list(userId: string, locale: Locale = 'en'): Promise<LocalisedDexEntry[]> {
-    const [rows, localisePokemon] = await Promise.all([
-      this.db.findEntriesForUser(userId),
-      this.translator.forLocale(locale),
-    ]);
+    const rows = await this.db.findEntriesForUser(userId);
 
-    return rows.map((row) => ({
-      userId: row.userId,
-      manholeNo: row.manholeNo,
-      visitedAt: row.visitedAt,
-      manhole: toLocalisedManhole(row.manhole, locale, localisePokemon),
-    }));
+    return Promise.all(
+      rows.map(async (row) => ({
+        userId: row.userId,
+        manholeNo: row.manholeNo,
+        visitedAt: row.visitedAt,
+        manhole: await this.toLocalisedManhole(row.manhole, locale),
+      })),
+    );
   }
 
   /** Raw rows with English names — used by evaluators / favorites pipelines. */
@@ -53,30 +49,31 @@ export class DexService {
   unmark(userId: string, manholeNo: string): Promise<void> {
     return this.db.deleteEntry(userId, manholeNo);
   }
-}
 
-function toLocalisedManhole(
-  row: DexEntryWithManhole['manhole'],
-  locale: Locale,
-  localisePokemon: PokemonNameLocaliser,
-): Manhole {
-  const pokemon = (row.pokemon as unknown as PokemonJson[]) ?? [];
+  private async toLocalisedManhole(
+    row: DexEntryWithManhole['manhole'],
+    locale: Locale,
+  ): Promise<Manhole> {
+    const pokemon = (row.pokemon as unknown as PokemonJson[]) ?? [];
 
-  return {
-    manholeNo: row.manholeNo,
-    name: locale === 'ja' && row.nameJa ? row.nameJa : row.name,
-    prefName: locale === 'ja' && row.prefNameJa ? row.prefNameJa : row.prefName,
-    prefEnName: row.prefEnName,
-    city: row.city,
-    address: row.address,
-    lat: row.lat,
-    lng: row.lng,
-    pictureUrl: row.pictureUrl,
-    pokemon: pokemon.map(
-      (entry): PokemonRef => ({
-        name: localisePokemon(entry.name),
-        zukan_url: entry.zukan_url,
-      }),
-    ),
-  };
+    return {
+      manholeNo: row.manholeNo,
+      name: locale === 'ja' && row.nameJa ? row.nameJa : row.name,
+      prefName: locale === 'ja' && row.prefNameJa ? row.prefNameJa : row.prefName,
+      prefEnName: row.prefEnName,
+      city: row.city,
+      address: row.address,
+      lat: row.lat,
+      lng: row.lng,
+      pictureUrl: row.pictureUrl,
+      pokemon: await Promise.all(
+        pokemon.map(
+          async (entry): Promise<PokemonRef> => ({
+            name: await this.translator.translate(entry.name, locale),
+            zukan_url: entry.zukan_url,
+          }),
+        ),
+      ),
+    };
+  }
 }
