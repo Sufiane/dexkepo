@@ -1,11 +1,32 @@
 <script lang="ts">
   import type { AchievementStatus } from '@dexkepo/shared';
+  import { t, locale } from '$lib/i18n/locale';
+  import { dict } from '$lib/i18n/dictionary';
 
   type Props = {
     achievement: AchievementStatus;
   };
 
   let { achievement }: Props = $props();
+
+  // Prefer locale-specific copy from the dictionary; fall back to whatever
+  // the backend sent (English) if a key is missing — keeps new achievements
+  // shipping fine before translations land.
+  const title = $derived.by(() => {
+    const localised = dict[$locale].achievements?.[
+      achievement.id as keyof typeof dict.en.achievements
+    ];
+
+    return localised?.title ?? achievement.title;
+  });
+
+  const description = $derived.by(() => {
+    const localised = dict[$locale].achievements?.[
+      achievement.id as keyof typeof dict.en.achievements
+    ];
+
+    return localised?.description ?? achievement.description;
+  });
 
   const pct = $derived.by(() => {
     if (!achievement.progress) {
@@ -26,8 +47,13 @@
       return null;
     }
 
-    return new Date(achievement.unlockedAt).toLocaleDateString();
+    return new Date(achievement.unlockedAt).toLocaleDateString(
+      $locale === 'ja' ? 'ja-JP' : undefined,
+    );
   });
+  // Touch `t` so the reactive subscription stays alive even if we only
+  // use it indirectly through `dict[$locale]`.
+  void t;
 </script>
 
 <div
@@ -52,11 +78,11 @@
         : 'text-slate-500 dark:text-slate-400'
     }`}
   >
-    {achievement.title}
+    {title}
   </p>
 
   <p class="mt-0.5 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
-    {achievement.description}
+    {description}
   </p>
 
   {#if achievement.progress && !achievement.unlocked}
