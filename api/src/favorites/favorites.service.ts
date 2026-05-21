@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { FavoritePokemon, FavoritesResponse } from '@dexkepo/shared';
+import { Locale } from '../common/locale';
 import { DexService } from '../dex/dex.service';
 import { ManholesService } from '../manholes/manholes.service';
 import { UsersService } from '../users/users.service';
+import { PokemonDb } from '../pokemon/pokemon.db';
 
 /** How many favorites to expose in the leaderboard. */
 const TOP_N = 3;
@@ -15,11 +17,12 @@ export class FavoritesService {
     private dexSvc: DexService,
     private manholesSvc: ManholesService,
     private usersSvc: UsersService,
+    private pokemonDb: PokemonDb,
   ) {}
 
-  async listForUser(userId: string): Promise<FavoritesResponse> {
+  async listForUser(userId: string, locale: Locale = 'en'): Promise<FavoritesResponse> {
     const [visits, allManholes, user] = await Promise.all([
-      this.dexSvc.list(userId),
+      this.dexSvc.listRaw(userId),
       this.manholesSvc.list(),
       this.usersSvc.me(userId),
     ]);
@@ -27,19 +30,15 @@ export class FavoritesService {
     const chosenFavorite = user.chosenFavorite;
 
     if (visits.length === 0) {
-      return { favorites: [], completedAll: false, chosenFavorite };
+      return this.localise({ favorites: [], completedAll: false, chosenFavorite }, locale);
     }
 
-    // Completed-everything sentinel: every Pokémon's ratio would tie at 1.0,
-    // so the manual pick (if any) becomes the favorite. Otherwise UI shows
-    // the "loves them all" message + a picker.
     if (visits.length === allManholes.length) {
       const favorites = buildCompletedFavorites(chosenFavorite, allManholes);
 
-      return { favorites, completedAll: true, chosenFavorite };
+      return this.localise({ favorites, completedAll: true, chosenFavorite }, locale);
     }
 
-    // Denominator: how many covers feature each Pokémon, across the whole catalogue.
     const totalByName = new Map<string, number>();
 
     for (const manhole of allManholes) {
@@ -48,7 +47,6 @@ export class FavoritesService {
       }
     }
 
-    // Numerator: how many of those covers the user has visited.
     const visitedByName = new Map<string, number>();
 
     for (const visit of visits) {
@@ -70,9 +68,6 @@ export class FavoritesService {
           ratio: visitedCount / totalCount,
         };
       })
-      // Most-captured Pokémon win. Ratio is just the tiebreaker so that
-      // when counts are equal, the user who completed the species fully
-      // ranks above one who hasn't.
       .sort((a, b) => {
         if (b.visitedCount !== a.visitedCount) {
           return b.visitedCount - a.visitedCount;
@@ -82,7 +77,36 @@ export class FavoritesService {
       })
       .slice(0, TOP_N);
 
-    return { favorites, completedAll: false, chosenFavorite };
+    return this.localise({ favorites, completedAll: false, chosenFavorite }, locale);
+  }
+
+  private async localise(
+    response: FavoritesResponse,
+    locale: Locale,
+  ): Promise<FavoritesResponse> {
+    if (locale === 'en') {
+      return response;
+    }
+
+    const all = await this.pokemonDb.findAll();
+    const jaByName = new Map<string, string>();
+
+    for (const entry of all) {
+      if (entry.nameJa) {
+        jaByName.set(entry.name, entry.nameJa);
+      }
+    }
+
+    return {
+      ...response,
+      favorites: response.favorites.map((entry) => ({
+        ...entry,
+        name: jaByName.get(entry.name) ?? entry.name,
+      })),
+      chosenFavorite: response.chosenFavorite
+        ? jaByName.get(response.chosenFavorite) ?? response.chosenFavorite
+        : null,
+    };
   }
 }
 
@@ -102,7 +126,6 @@ function buildCompletedFavorites(
     }
   }
 
-  // Defensive: a chosen name no longer in the catalogue still renders.
   if (totalCount === 0) {
     totalCount = 1;
   }

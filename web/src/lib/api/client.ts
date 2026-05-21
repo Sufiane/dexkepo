@@ -1,5 +1,6 @@
 import { get } from 'svelte/store';
 import { auth, logout } from '../stores/auth';
+import { locale } from '../i18n/locale';
 
 const BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:7777';
 
@@ -20,6 +21,9 @@ export async function api<T>(
   if (init.auth) {
     const state = get(auth);
     if (state) headers.set('Authorization', `Bearer ${state.token}`);
+  }
+  if (!headers.has('Accept-Language')) {
+    headers.set('Accept-Language', get(locale));
   }
   const res = await fetch(BASE + path, { ...init, headers });
   if (res.status === 401 && init.auth) {

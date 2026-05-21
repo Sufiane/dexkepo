@@ -1,0 +1,1 @@
+ALTER TABLE "Pokemon" ADD COLUMN "nameJa" TEXT;

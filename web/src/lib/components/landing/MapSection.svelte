@@ -125,9 +125,7 @@
             <ManholePanel
               manholeNo={selected.manholeNo}
               name={selected.name}
-              nameJa={selected.nameJa}
               prefEnName={selected.prefEnName}
-              prefNameJa={selected.prefNameJa}
               pictureUrl={selected.pictureUrl}
               pokemonNames={selected.pokemonNames}
               lat={selected.lat}

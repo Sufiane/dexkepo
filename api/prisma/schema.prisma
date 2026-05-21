@@ -77,6 +77,9 @@ model Pokemon {
   isLegendary Boolean  @default(false)
   isMythical  Boolean  @default(false)
   generation  Int      @default(0)
+  /// Katakana name from PokeAPI species `names[]` (language=ja-Hrkt),
+  /// e.g. "ピカチュウ". Null if PokeAPI lookup fails.
+  nameJa      String?
 
   @@index([pokeApiId])
 }

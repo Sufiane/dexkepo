@@ -13,9 +13,7 @@
   type Props = {
     manholeNo: string;
     name: string;
-    nameJa: string | null;
     prefEnName: string;
-    prefNameJa: string | null;
     pictureUrl: string;
     pokemonNames: string[];
     lat: number;
@@ -28,9 +26,7 @@
   let {
     manholeNo,
     name,
-    nameJa,
     prefEnName,
-    prefNameJa,
     pictureUrl,
     pokemonNames,
     lat,
@@ -40,10 +36,11 @@
     onToggle,
   }: Props = $props();
 
-  const displayName = $derived($locale === 'ja' && nameJa ? nameJa : name);
-  const displayPref = $derived(
-    $locale === 'ja' && prefNameJa ? prefNameJa : localisedPrefecture(prefEnName, $locale),
-  );
+  // `name` and pokemonNames are pre-localised by the API. `prefEnName` stays
+  // canonical (slug for filtering) — fall back to the static prefecture map
+  // for the user-facing chip.
+  const displayName = $derived(name);
+  const displayPref = $derived(localisedPrefecture(prefEnName, $locale));
 
   // Google Maps "search" URL with raw coordinates — works on web + iOS/Android
   // apps via the universal `maps.google.com` deep-link handler. User lands on

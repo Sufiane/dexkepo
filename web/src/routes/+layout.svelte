@@ -7,6 +7,7 @@
   import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
   import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
   import Header from '$lib/components/Header.svelte';
+  import { locale } from '$lib/i18n/locale';
 
   const client = new QueryClient({
     defaultOptions: {
@@ -15,6 +16,16 @@
   });
 
   let { children } = $props();
+
+  // When the user flips EN ↔ JA, every cached response is stale (the API
+  // pre-localises everything), so blow away the whole cache.
+  let prevLocale = $state($locale);
+  $effect(() => {
+    if ($locale !== prevLocale) {
+      prevLocale = $locale;
+      client.invalidateQueries();
+    }
+  });
 </script>
 
 <QueryClientProvider client={client}>

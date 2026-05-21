@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { AchievementStatus } from '@dexkepo/shared';
-  import { t, locale } from '$lib/i18n/locale';
-  import { dict } from '$lib/i18n/dictionary';
+  import { locale } from '$lib/i18n/locale';
 
   type Props = {
     achievement: AchievementStatus;
@@ -9,24 +8,9 @@
 
   let { achievement }: Props = $props();
 
-  // Prefer locale-specific copy from the dictionary; fall back to whatever
-  // the backend sent (English) if a key is missing — keeps new achievements
-  // shipping fine before translations land.
-  const title = $derived.by(() => {
-    const localised = dict[$locale].achievements?.[
-      achievement.id as keyof typeof dict.en.achievements
-    ];
-
-    return localised?.title ?? achievement.title;
-  });
-
-  const description = $derived.by(() => {
-    const localised = dict[$locale].achievements?.[
-      achievement.id as keyof typeof dict.en.achievements
-    ];
-
-    return localised?.description ?? achievement.description;
-  });
+  // Title + description come pre-localised from the backend.
+  const title = $derived(achievement.title);
+  const description = $derived(achievement.description);
 
   const pct = $derived.by(() => {
     if (!achievement.progress) {
@@ -51,9 +35,6 @@
       $locale === 'ja' ? 'ja-JP' : undefined,
     );
   });
-  // Touch `t` so the reactive subscription stays alive even if we only
-  // use it indirectly through `dict[$locale]`.
-  void t;
 </script>
 
 <div

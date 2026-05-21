@@ -3,8 +3,7 @@
   import { createQuery } from '@tanstack/svelte-query';
   import type { AchievementCategory } from '@dexkepo/shared';
   import { auth } from '$lib/stores/auth';
-  import { t, locale } from '$lib/i18n/locale';
-  import { localisedPrefecture } from '$lib/i18n/prefectures';
+  import { t } from '$lib/i18n/locale';
   import { listDex } from '$lib/api/dex';
   import { listManholes } from '$lib/api/manholes';
   import { listAchievements } from '$lib/api/achievements';
@@ -171,12 +170,10 @@
               {/if}
               <div class="min-w-0 flex-1">
                 <p class="truncate font-semibold text-slate-900 dark:text-slate-100">
-                  #{entry.manholeNo} · {$locale === 'ja' && entry.manhole.nameJa ? entry.manhole.nameJa : entry.manhole.name}
+                  #{entry.manholeNo} · {entry.manhole.name}
                 </p>
                 <p class="truncate text-xs text-slate-500">
-                  {$locale === 'ja' && entry.manhole.prefNameJa
-                    ? entry.manhole.prefNameJa
-                    : localisedPrefecture(entry.manhole.prefName, $locale)}{entry.manhole.city ? ` · ${entry.manhole.city}` : ''}
+                  {entry.manhole.prefName}{entry.manhole.city ? ` · ${entry.manhole.city}` : ''}
                 </p>
               </div>
               <span class="text-[11px] tabular-nums text-slate-400">

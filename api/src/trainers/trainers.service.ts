@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TrainerProfile } from '@dexkepo/shared';
+import { Locale } from '../common/locale';
 import { DexService } from '../dex/dex.service';
 import { ManholesService } from '../manholes/manholes.service';
 import { AchievementsService } from '../achievements/achievements.service';
@@ -16,19 +17,18 @@ export class TrainersService {
     private favoritesSvc: FavoritesService,
   ) {}
 
-  async profile(pseudo: string): Promise<TrainerProfile> {
+  async profile(pseudo: string, locale: Locale = 'en'): Promise<TrainerProfile> {
     const trainer = await this.db.findByPseudo(pseudo);
 
-    // Private and missing share the same 404 — no info leak.
     if (!trainer || !trainer.publicProfile) {
       throw new NotFoundException('trainer not found');
     }
 
     const [visits, allManholes, achievements, favorites] = await Promise.all([
-      this.dexSvc.list(trainer.id),
+      this.dexSvc.listRaw(trainer.id),
       this.manholesSvc.list(),
-      this.achievementsSvc.publicListForUser(trainer.id),
-      this.favoritesSvc.listForUser(trainer.id),
+      this.achievementsSvc.publicListForUser(trainer.id, locale),
+      this.favoritesSvc.listForUser(trainer.id, locale),
     ]);
 
     return {

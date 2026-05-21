@@ -1,11 +1,12 @@
-import { Controller, Delete, Get, HttpCode, Param, Post, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Headers, HttpCode, Param, Post, UseGuards } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
 import { DexEntry } from '@prisma/client';
 import { JwtAuthGuard } from '../common/jwt-auth.guard';
 import { UserThrottlerGuard } from '../common/user-throttler.guard';
 import { AuthUser, CurrentUser } from '../common/current-user.decorator';
+import { parseLocale } from '../common/locale';
 import { DexService } from './dex.service';
-import { DexEntryWithManhole } from './dex.db';
+import { LocalisedDexEntry } from './dex.types';
 
 // JWT first (populates req.user) → UserThrottlerGuard reads req.user.id.
 @UseGuards(JwtAuthGuard, UserThrottlerGuard)
@@ -17,8 +18,11 @@ export class DexController {
   // Listing your own dex is a read — it shouldn't eat the write-budget.
   @SkipThrottle()
   @Get()
-  list(@CurrentUser() user: AuthUser): Promise<DexEntryWithManhole[]> {
-    return this.svc.list(user.id);
+  list(
+    @CurrentUser() user: AuthUser,
+    @Headers('accept-language') acceptLanguage: string | undefined,
+  ): Promise<LocalisedDexEntry[]> {
+    return this.svc.list(user.id, parseLocale(acceptLanguage));
   }
 
   @Post(':manholeNo')

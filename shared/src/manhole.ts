@@ -3,6 +3,13 @@ export type PokemonRef = {
   zukan_url: string;
 };
 
+/**
+ * Detailed manhole shape returned from `GET /manholes/:no`.
+ *
+ * All locale-sensitive fields (`name`, `prefName`, `pokemon[].name`,
+ * `city`, `address`) are pre-localised by the API based on the request's
+ * `Accept-Language` header. The frontend just renders them.
+ */
 export type Manhole = {
   manholeNo: string;
   name: string;
@@ -14,15 +21,14 @@ export type Manhole = {
   lng: number;
   pictureUrl: string;
   pokemon: PokemonRef[];
-  nameJa: string | null;
-  prefNameJa: string | null;
 };
 
-// Slim shape returned by GET /manholes (list). Drop heavy fields so the
-// payload for 470 rows stays small enough for tight-RAM hosts to buffer.
-// pictureUrl + pokemonNames are included so the map markers can render
-// pokemon sprites and the popup can show the cover image instantly,
-// without waiting for the /manholes/:no detail fetch.
+/**
+ * Slim shape returned by `GET /manholes`. Same locale rules as `Manhole`.
+ *
+ * `prefEnName` stays canonical (English slug) because it is used as a filter
+ * key in the URL/state and must round-trip stably across locales.
+ */
 export type ManholeSummary = {
   manholeNo: string;
   name: string;
@@ -31,6 +37,4 @@ export type ManholeSummary = {
   lng: number;
   pictureUrl: string;
   pokemonNames: string[];
-  nameJa: string | null;
-  prefNameJa: string | null;
 };

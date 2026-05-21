@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { AchievementCategory, AchievementDefinition, AchievementStatus } from '@dexkepo/shared';
+import { Locale } from '../common/locale';
 import { DexService } from '../dex/dex.service';
 import { ManholesService } from '../manholes/manholes.service';
 import { AchievementsDb } from './achievements.db';
-import { PokemonDb } from './pokemon.db';
+import { PokemonDb } from '../pokemon/pokemon.db';
 import { EvaluationContext, EvaluationOutcome, EvaluatorMap } from './evaluator';
 import { countDefinitions, countEvaluators } from './types/count';
 import { geoDefinitions, geoEvaluators } from './types/geo';
 import { timeDefinitions, timeEvaluators } from './types/time';
 import { typeDefinitions, typeEvaluators } from './types/type';
+import { localiseAchievement } from './i18n';
 
 const ALL_DEFINITIONS: AchievementDefinition[] = [
   ...countDefinitions,
@@ -40,9 +42,9 @@ export class AchievementsService {
    *   - newly-eligible unlocks are persisted lazily on this call;
    *   - in-progress badges still expose a live `progress` numerator.
    */
-  async listForUser(userId: string): Promise<AchievementStatus[]> {
+  async listForUser(userId: string, locale: Locale = 'en'): Promise<AchievementStatus[]> {
     const [visits, allManholes, allPokemon, storedRows] = await Promise.all([
-      this.dexSvc.list(userId),
+      this.dexSvc.listRaw(userId),
       this.manholesSvc.list(),
       this.pokemonDb.findAll(),
       this.db.findUnlockedForUser(userId),
@@ -85,11 +87,17 @@ export class AchievementsService {
     const now = new Date().toISOString();
 
     return computed.map(({ def, outcome }) => {
+      const localised = localiseAchievement(def.id, def, locale);
+      const merged: AchievementDefinition = {
+        ...def,
+        title: localised.title,
+        description: localised.description,
+      };
       const storedAt = storedUnlockedAt.get(def.id);
 
       if (storedAt) {
         return {
-          ...def,
+          ...merged,
           ...outcome,
           unlocked: true,
           unlockedAt: storedAt.toISOString(),
@@ -98,13 +106,13 @@ export class AchievementsService {
 
       if (outcome.unlocked) {
         return {
-          ...def,
+          ...merged,
           ...outcome,
           unlockedAt: outcome.unlockedAt ?? now,
         };
       }
 
-      return { ...def, ...outcome };
+      return { ...merged, ...outcome };
     });
   }
 
@@ -112,7 +120,7 @@ export class AchievementsService {
    * Public-safe slice of `listForUser`: unlocked badges only, no progress
    * numerators, no email/userid. Used by the anonymous trainer endpoint.
    */
-  async publicListForUser(userId: string): Promise<
+  async publicListForUser(userId: string, locale: Locale = 'en'): Promise<
     Array<{
       id: string;
       title: string;
@@ -121,7 +129,7 @@ export class AchievementsService {
       unlockedAt: string;
     }>
   > {
-    const all = await this.listForUser(userId);
+    const all = await this.listForUser(userId, locale);
 
     return all
       .filter((entry) => entry.unlocked && entry.unlockedAt != null)
