@@ -6,6 +6,7 @@ import { UserThrottlerGuard } from '../common/user-throttler.guard';
 import { AuthUser, CurrentUser } from '../common/current-user.decorator';
 import { Locale } from '../common/locale';
 import { RequestLocale } from '../common/locale.decorator';
+import { ManholeNoParam } from '../manholes/dto/manhole-no.param';
 import { DexService } from './dex.service';
 import { LocalisedDexEntry } from './dex.types';
 
@@ -29,17 +30,17 @@ export class DexController {
   @Post(':manholeNo')
   mark(
     @CurrentUser() user: AuthUser,
-    @Param('manholeNo') manholeNo: string,
+    @Param() params: ManholeNoParam,
   ): Promise<DexEntry> {
-    return this.svc.mark(user.id, manholeNo);
+    return this.svc.mark(user.id, params.manholeNo);
   }
 
   @Delete(':manholeNo')
   @HttpCode(204)
   unmark(
     @CurrentUser() user: AuthUser,
-    @Param('manholeNo') manholeNo: string,
+    @Param() params: ManholeNoParam,
   ): Promise<void> {
-    return this.svc.unmark(user.id, manholeNo);
+    return this.svc.unmark(user.id, params.manholeNo);
   }
 }

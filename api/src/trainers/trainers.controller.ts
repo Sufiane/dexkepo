@@ -4,6 +4,7 @@ import { TrainerProfile } from '@dexkepo/shared';
 import { TrainerPublicThrottlerGuard } from '../common/trainer-public-throttler.guard';
 import { Locale } from '../common/locale';
 import { RequestLocale } from '../common/locale.decorator';
+import { TrainerPseudoParam } from './dto/trainer-pseudo.param';
 import { TrainersService } from './trainers.service';
 
 @Controller('trainers')
@@ -15,8 +16,8 @@ export class TrainersController {
   @Get(':pseudo')
   one(
     @RequestLocale() locale: Locale,
-    @Param('pseudo') pseudo: string,
+    @Param() params: TrainerPseudoParam,
   ): Promise<TrainerProfile> {
-    return this.svc.profile(pseudo, locale);
+    return this.svc.profile(params.pseudo, locale);
   }
 }
