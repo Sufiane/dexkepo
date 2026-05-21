@@ -4,7 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 export type UserRow = Pick<
   User,
-  'id' | 'pseudo' | 'email' | 'publicProfile' | 'createdAt'
+  'id' | 'pseudo' | 'email' | 'publicProfile' | 'chosenFavorite' | 'createdAt'
 >;
 
 const PUBLIC_SELECT = {
@@ -12,8 +12,14 @@ const PUBLIC_SELECT = {
   pseudo: true,
   email: true,
   publicProfile: true,
+  chosenFavorite: true,
   createdAt: true,
 } as const;
+
+export type UserProfilePatch = {
+  publicProfile?: boolean;
+  chosenFavorite?: string | null;
+};
 
 @Injectable()
 export class UsersDb {
@@ -26,10 +32,7 @@ export class UsersDb {
     });
   }
 
-  updateProfile(
-    id: string,
-    patch: { publicProfile?: boolean },
-  ): Promise<UserRow | null> {
+  updateProfile(id: string, patch: UserProfilePatch): Promise<UserRow | null> {
     return this.prisma.user.update({
       where: { id },
       data: patch,

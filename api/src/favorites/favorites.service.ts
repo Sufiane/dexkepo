@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { FavoritePokemon, FavoritesResponse } from '@dexkepo/shared';
 import { DexService } from '../dex/dex.service';
 import { ManholesService } from '../manholes/manholes.service';
+import { UsersService } from '../users/users.service';
 
 /** How many favorites to expose in the leaderboard. */
 const TOP_N = 3;
@@ -13,23 +14,29 @@ export class FavoritesService {
   constructor(
     private dexSvc: DexService,
     private manholesSvc: ManholesService,
+    private usersSvc: UsersService,
   ) {}
 
   async listForUser(userId: string): Promise<FavoritesResponse> {
-    const [visits, allManholes] = await Promise.all([
+    const [visits, allManholes, user] = await Promise.all([
       this.dexSvc.list(userId),
       this.manholesSvc.list(),
+      this.usersSvc.me(userId),
     ]);
 
+    const chosenFavorite = user.chosenFavorite;
+
     if (visits.length === 0) {
-      return { favorites: [], completedAll: false };
+      return { favorites: [], completedAll: false, chosenFavorite };
     }
 
     // Completed-everything sentinel: every Pokémon's ratio would tie at 1.0,
-    // so picking a "favorite" is meaningless. UI treats this as a brag, not a
-    // leaderboard.
+    // so the manual pick (if any) becomes the favorite. Otherwise UI shows
+    // the "loves them all" message + a picker.
     if (visits.length === allManholes.length) {
-      return { favorites: [], completedAll: true };
+      const favorites = buildCompletedFavorites(chosenFavorite, allManholes);
+
+      return { favorites, completedAll: true, chosenFavorite };
     }
 
     // Denominator: how many covers feature each Pokémon, across the whole catalogue.
@@ -75,6 +82,37 @@ export class FavoritesService {
       })
       .slice(0, TOP_N);
 
-    return { favorites, completedAll: false };
+    return { favorites, completedAll: false, chosenFavorite };
   }
+}
+
+function buildCompletedFavorites(
+  chosenFavorite: string | null,
+  allManholes: { pokemonNames: string[] }[],
+): FavoritePokemon[] {
+  if (!chosenFavorite) {
+    return [];
+  }
+
+  let totalCount = 0;
+
+  for (const manhole of allManholes) {
+    if (manhole.pokemonNames.includes(chosenFavorite)) {
+      totalCount += 1;
+    }
+  }
+
+  // Defensive: a chosen name no longer in the catalogue still renders.
+  if (totalCount === 0) {
+    totalCount = 1;
+  }
+
+  return [
+    {
+      name: chosenFavorite,
+      visitedCount: totalCount,
+      totalCount,
+      ratio: 1,
+    },
+  ];
 }

@@ -38,6 +38,7 @@ export class TrainersService {
       totalCount: allManholes.length,
       achievements,
       favorites: favorites.favorites,
+      completedAll: favorites.completedAll,
     };
   }
 }

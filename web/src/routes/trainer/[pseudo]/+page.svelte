@@ -49,7 +49,11 @@
       />
 
       <FavoritePokemon
-        data={{ favorites: profile.favorites, completedAll: false }}
+        data={{
+          favorites: profile.favorites,
+          completedAll: profile.completedAll,
+          chosenFavorite: null,
+        }}
         loading={false}
       />
 

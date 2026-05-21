@@ -16,4 +16,6 @@ export type TrainerProfile = {
   totalCount: number;
   achievements: PublicAchievement[];
   favorites: FavoritePokemon[];
+  /** True once visitedCount === totalCount. UI swaps the favorites podium. */
+  completedAll: boolean;
 };

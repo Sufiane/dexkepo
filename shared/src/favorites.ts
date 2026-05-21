@@ -15,8 +15,12 @@ export type FavoritePokemon = {
 export type FavoritesResponse = {
   favorites: FavoritePokemon[];
   /**
-   * True when the user has marked every cover. In that case favorites is
-   * empty because every Pokémon would tie at 100% and ranking is meaningless.
+   * True when the user has marked every cover. In that case ranking is
+   * meaningless; if `chosenFavorite` is set, it is materialised as the single
+   * entry in `favorites`. Otherwise `favorites` is empty and the UI shows
+   * the "loves them all" message + a picker.
    */
   completedAll: boolean;
+  /** User-pinned favorite Pokémon name. Null until they set one. */
+  chosenFavorite: string | null;
 };

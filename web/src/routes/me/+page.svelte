@@ -12,6 +12,10 @@
   import AchievementsGridSkeleton from '$lib/components/skeletons/AchievementsGridSkeleton.svelte';
   import RecentVisitsSkeleton from '$lib/components/skeletons/RecentVisitsSkeleton.svelte';
   import PublicProfileCard from '$lib/components/me/PublicProfileCard.svelte';
+  import ChosenFavoritePicker from '$lib/components/me/ChosenFavoritePicker.svelte';
+  import { useQueryClient } from '@tanstack/svelte-query';
+
+  const queryClient = useQueryClient();
 
   $effect(() => {
     if (!$auth) {
@@ -100,6 +104,13 @@
 
     <!-- Favourite Pokémon -->
     <FavoritePokemon data={$favoritesQ.data} loading={$favoritesQ.isLoading} />
+
+    {#if $favoritesQ.data?.completedAll && $manholesQ.data}
+      <ChosenFavoritePicker
+        manholes={$manholesQ.data}
+        onChange={() => queryClient.invalidateQueries({ queryKey: ['favorites'] })}
+      />
+    {/if}
 
     <!-- Achievements -->
     <section>

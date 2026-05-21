@@ -32,6 +32,28 @@
     <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
       Mark a few covers to see who your favourite Pokémon really is.
     </p>
+  {:else if data.completedAll && data.favorites.length === 1}
+    {@const chosen = data.favorites[0]}
+    <div class="mt-3 flex items-center gap-4 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-100 p-4 ring-2 ring-amber-300 dark:from-amber-950/40 dark:to-orange-950/40 dark:ring-amber-700">
+      <img
+        src={spriteUrl(chosen.name)}
+        alt={chosen.name}
+        class="h-24 w-24 flex-shrink-0 object-contain"
+        style="image-rendering: pixelated;"
+        onerror={(event) => ((event.currentTarget as HTMLImageElement).style.visibility = 'hidden')}
+      />
+      <div>
+        <p class="text-[10px] font-bold uppercase tracking-widest text-amber-700 dark:text-amber-300">
+          👑 Self-declared favorite
+        </p>
+        <p class="mt-1 text-2xl font-extrabold text-slate-900 dark:text-slate-100">
+          {chosen.name}
+        </p>
+        <p class="text-xs text-slate-600 dark:text-slate-400">
+          Completed all {chosen.totalCount} cover{chosen.totalCount === 1 ? '' : 's'}.
+        </p>
+      </div>
+    </div>
   {:else if data.completedAll}
     <p class="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">
       👑 You've visited every cover — they're <em>all</em> your favourites.

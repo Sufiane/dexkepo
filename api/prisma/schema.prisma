@@ -8,14 +8,17 @@ datasource db {
 }
 
 model User {
-  id            String                @id @default(cuid())
-  pseudo        String                @unique
-  email         String                @unique
-  password      String
-  publicProfile Boolean               @default(true)
-  createdAt     DateTime              @default(now())
-  dex           DexEntry[]
-  achievements  UnlockedAchievement[]
+  id             String                @id @default(cuid())
+  pseudo         String                @unique
+  email          String                @unique
+  password       String
+  publicProfile  Boolean               @default(true)
+  /// Pokémon name the user pinned as their favorite. Used once they've
+  /// completed every cover and ratios stop distinguishing.
+  chosenFavorite String?
+  createdAt      DateTime              @default(now())
+  dex            DexEntry[]
+  achievements   UnlockedAchievement[]
 }
 
 model Manhole {

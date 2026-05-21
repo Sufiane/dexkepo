@@ -34,6 +34,7 @@ function toPublic(row: UserRow): UserPublic {
     pseudo: row.pseudo,
     email: row.email,
     publicProfile: row.publicProfile,
+    chosenFavorite: row.chosenFavorite,
     createdAt: row.createdAt.toISOString(),
   };
 }

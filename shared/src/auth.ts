@@ -3,6 +3,7 @@ export type UserPublic = {
   pseudo: string;
   email: string;
   publicProfile: boolean;
+  chosenFavorite: string | null;
   createdAt?: string;
 };
 

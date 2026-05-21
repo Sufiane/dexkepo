@@ -7,6 +7,7 @@ export function getMe(): Promise<UserPublic> {
 
 export function updateProfile(patch: {
   publicProfile?: boolean;
+  chosenFavorite?: string | null;
 }): Promise<UserPublic> {
   return api<UserPublic>('/users/me', {
     method: 'PATCH',
