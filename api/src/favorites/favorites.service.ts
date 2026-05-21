@@ -4,7 +4,7 @@ import { Locale } from '../common/locale';
 import { DexService } from '../dex/dex.service';
 import { ManholesService } from '../manholes/manholes.service';
 import { UsersService } from '../users/users.service';
-import { PokemonDb } from '../pokemon/pokemon.db';
+import { PokemonNameTranslator } from '../pokemon/pokemon-name-translator';
 
 /** How many favorites to expose in the leaderboard. */
 const TOP_N = 3;
@@ -17,7 +17,7 @@ export class FavoritesService {
     private dexSvc: DexService,
     private manholesSvc: ManholesService,
     private usersSvc: UsersService,
-    private pokemonDb: PokemonDb,
+    private translator: PokemonNameTranslator,
   ) {}
 
   async listForUser(userId: string, locale: Locale = 'en'): Promise<FavoritesResponse> {
@@ -88,14 +88,7 @@ export class FavoritesService {
       return response;
     }
 
-    const all = await this.pokemonDb.findAll();
-    const jaByName = new Map<string, string>();
-
-    for (const entry of all) {
-      if (entry.nameJa) {
-        jaByName.set(entry.name, entry.nameJa);
-      }
-    }
+    const jaByName = await this.translator.enToJa(locale);
 
     return {
       ...response,

@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Manhole as PrismaManhole } from '@prisma/client';
 import { Manhole, ManholeSummary, PokemonRef } from '@dexkepo/shared';
 import { Locale } from '../common/locale';
-import { PokemonDb } from '../pokemon/pokemon.db';
+import { PokemonNameTranslator } from '../pokemon/pokemon-name-translator';
 import { ManholesDb, ManholeListRow } from './manholes.db';
 
 type PokemonJson = { name: string; zukan_url: string };
@@ -11,7 +11,7 @@ type PokemonJson = { name: string; zukan_url: string };
 export class ManholesService {
   constructor(
     private db: ManholesDb,
-    private pokemonDb: PokemonDb,
+    private translator: PokemonNameTranslator,
   ) {}
 
   /**
@@ -21,7 +21,7 @@ export class ManholesService {
   async list(locale: Locale = 'en', pref?: string): Promise<ManholeSummary[]> {
     const [rows, pokemonNameJa] = await Promise.all([
       this.db.findAll(pref),
-      this.pokemonNameMap(locale),
+      this.translator.enToJa(locale),
     ]);
 
     return rows.map((row) => this.toSummary(row, locale, pokemonNameJa));
@@ -30,7 +30,7 @@ export class ManholesService {
   async one(locale: Locale, manholeNo: string): Promise<Manhole> {
     const [row, pokemonNameJa] = await Promise.all([
       this.db.findOne(manholeNo),
-      this.pokemonNameMap(locale),
+      this.translator.enToJa(locale),
     ]);
 
     if (!row) {
@@ -49,23 +49,6 @@ export class ManholesService {
     return this.db.findAll();
   }
 
-  private async pokemonNameMap(locale: Locale): Promise<Map<string, string>> {
-    if (locale === 'en') {
-      return new Map();
-    }
-
-    const all = await this.pokemonDb.findAll();
-    const map = new Map<string, string>();
-
-    for (const entry of all) {
-      if (entry.nameJa) {
-        map.set(entry.name, entry.nameJa);
-      }
-    }
-
-    return map;
-  }
-
   private toSummary(
     row: ManholeListRow,
     locale: Locale,
@@ -80,7 +63,7 @@ export class ManholesService {
       lat: row.lat,
       lng: row.lng,
       pictureUrl: row.pictureUrl,
-      pokemonNames: pokemon.map((entry) => pickPokemonName(entry.name, pokemonNameJa)),
+      pokemonNames: pokemon.map((entry) => pokemonNameJa.get(entry.name) ?? entry.name),
     };
   }
 
@@ -103,7 +86,7 @@ export class ManholesService {
       pictureUrl: row.pictureUrl,
       pokemon: pokemon.map(
         (entry): PokemonRef => ({
-          name: pickPokemonName(entry.name, pokemonNameJa),
+          name: pokemonNameJa.get(entry.name) ?? entry.name,
           zukan_url: entry.zukan_url,
         }),
       ),
@@ -131,8 +114,4 @@ function pickPref(
   }
 
   return row.prefName;
-}
-
-function pickPokemonName(name: string, jaMap: Map<string, string>): string {
-  return jaMap.get(name) ?? name;
 }

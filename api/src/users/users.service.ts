@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserPublic } from '@dexkepo/shared';
-import { PokemonDb } from '../pokemon/pokemon.db';
+import { PokemonNameTranslator } from '../pokemon/pokemon-name-translator';
 import { UserRow, UsersDb, UserProfilePatch } from './users.db';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 
@@ -8,7 +8,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 export class UsersService {
   constructor(
     private db: UsersDb,
-    private pokemonDb: PokemonDb,
+    private translator: PokemonNameTranslator,
   ) {}
 
   async me(id: string): Promise<UserPublic> {
@@ -40,22 +40,23 @@ export class UsersService {
     }
 
     const incoming = patch.chosenFavorite;
-    const all = await this.pokemonDb.findAll();
+    const enToJa = await this.translator.enToJa('ja');
 
     // Direct EN match wins (no work to do).
-    if (all.some((entry) => entry.name === incoming)) {
+    if (enToJa.has(incoming)) {
       return patch;
     }
 
     // JA → EN reverse lookup.
-    const enMatch = all.find((entry) => entry.nameJa === incoming);
+    const jaToEn = await this.translator.jaToEn();
+    const enMatch = jaToEn.get(incoming);
 
     if (enMatch) {
-      return { ...patch, chosenFavorite: enMatch.name };
+      return { ...patch, chosenFavorite: enMatch };
     }
 
     // Unknown name — let it through. Either a typo (user will see no display
-    // sprite) or a name added to the catalogue after this enrichment ran.
+    // sprite) or a name added to the catalogue after enrichment ran.
     return patch;
   }
 }

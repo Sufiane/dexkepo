@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DexEntry } from '@prisma/client';
 import { Manhole, PokemonRef } from '@dexkepo/shared';
 import { Locale } from '../common/locale';
-import { PokemonDb } from '../pokemon/pokemon.db';
+import { PokemonNameTranslator } from '../pokemon/pokemon-name-translator';
 import { DexDb, DexEntryWithManhole } from './dex.db';
 import { LocalisedDexEntry } from './dex.types';
 
@@ -12,7 +12,7 @@ type PokemonJson = { name: string; zukan_url: string };
 export class DexService {
   constructor(
     private db: DexDb,
-    private pokemonDb: PokemonDb,
+    private translator: PokemonNameTranslator,
   ) {}
 
   /**
@@ -21,7 +21,7 @@ export class DexService {
   async list(userId: string, locale: Locale = 'en'): Promise<LocalisedDexEntry[]> {
     const [rows, pokemonNameJa] = await Promise.all([
       this.db.findEntriesForUser(userId),
-      this.pokemonNameMap(locale),
+      this.translator.enToJa(locale),
     ]);
 
     return rows.map((row) => ({
@@ -49,23 +49,6 @@ export class DexService {
 
   unmark(userId: string, manholeNo: string): Promise<void> {
     return this.db.deleteEntry(userId, manholeNo);
-  }
-
-  private async pokemonNameMap(locale: Locale): Promise<Map<string, string>> {
-    if (locale === 'en') {
-      return new Map();
-    }
-
-    const all = await this.pokemonDb.findAll();
-    const map = new Map<string, string>();
-
-    for (const entry of all) {
-      if (entry.nameJa) {
-        map.set(entry.name, entry.nameJa);
-      }
-    }
-
-    return map;
   }
 }
 
