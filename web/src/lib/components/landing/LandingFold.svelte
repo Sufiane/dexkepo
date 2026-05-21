@@ -17,8 +17,8 @@
 </script>
 
 <section
-  class="relative flex h-dvh w-full flex-col overflow-hidden
-         bg-gradient-to-br from-rose-500 via-red-500 to-orange-500 px-4 text-white"
+  class="relative flex h-dvh w-full flex-col items-center justify-center gap-6 overflow-hidden
+         bg-gradient-to-br from-rose-500 via-red-500 to-orange-500 px-4 py-6 text-white sm:gap-8 sm:py-8"
 >
   <!-- Soft radial highlight behind the content -->
   <div
@@ -26,8 +26,8 @@
     class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,.18),transparent_60%)]"
   ></div>
 
-  <!-- Hero: top half, compact. -->
-  <div class="relative flex flex-1 flex-col items-center justify-center gap-3 pt-6 text-center sm:gap-4">
+  <!-- Hero -->
+  <div class="relative flex flex-col items-center gap-3 text-center sm:gap-4">
     <span
       class="relative inline-block h-14 w-14 overflow-hidden rounded-full bg-white shadow-2xl ring-4 ring-white/60 sm:h-16 sm:w-16"
       aria-hidden="true"
@@ -66,9 +66,9 @@
     </div>
   </div>
 
-  <!-- Features + how-it-works strip: bottom half. Translucent cards on the
-       gradient so we keep one continuous panel instead of stacking sections. -->
-  <div class="relative mx-auto w-full max-w-6xl pb-10 pt-2">
+  <!-- Features + how-it-works strip sits right under the hero, sharing the
+       same gradient. Cards are translucent so the panel feels continuous. -->
+  <div class="relative mx-auto w-full max-w-6xl">
     <!-- 3 features -->
     <ul class="grid grid-cols-3 gap-2 sm:gap-3">
       {#each featureKeys as key (key)}
