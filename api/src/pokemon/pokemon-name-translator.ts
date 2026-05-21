@@ -3,17 +3,21 @@ import { Locale } from '../common/locale';
 import { PokemonDb } from './pokemon.db';
 
 /**
- * Builds name-translation maps from the Pokemon catalogue.
+ * Localises canonical (EN) Pokémon names to the requested locale.
  *
- * Three services (manholes, dex, favorites) all needed the same EN→display
- * lookup to localise pokemon names in their responses; this is the single
- * source of truth.
+ * Callers fetch a bound localiser once per request and apply it to each
+ * name. For EN the localiser is the identity function; for JA it looks up
+ * the Pokemon catalogue. Falling back to the input string is the
+ * translator's job, so call sites are just `localise(entry.name)`.
  *
- * Cached for a short window so back-to-back requests on the same warm
- * container don't re-query the table on every hit.
+ * Cached for a short window so concurrent / back-to-back requests on the
+ * same warm container don't re-query the table per hit.
  */
 const CACHE_TTL_MS = 5 * 60_000;
-const EMPTY: ReadonlyMap<string, string> = new Map();
+
+export type PokemonNameLocaliser = (name: string) => string;
+
+const IDENTITY: PokemonNameLocaliser = (name) => name;
 
 @Injectable()
 export class PokemonNameTranslator {
@@ -23,23 +27,17 @@ export class PokemonNameTranslator {
   constructor(private db: PokemonDb) {}
 
   /**
-   * Map of canonical EN name → display name for the given locale.
-   *
-   *   - 'en': empty (caller's `?? name` fallback yields the canonical EN).
-   *   - 'ja': EN → JA katakana, populated from the Pokemon table.
-   *
-   * Pattern at the call site:
-   *
-   *     const names = await translator.namesFor(locale);
-   *     // ...
-   *     name: names.get(entry.name) ?? entry.name,
+   * Returns a function that localises one EN name into the target locale.
+   * Use it as a per-request boundary — fetch once, apply many times.
    */
-  async namesFor(locale: Locale): Promise<ReadonlyMap<string, string>> {
+  async forLocale(locale: Locale): Promise<PokemonNameLocaliser> {
     if (locale === 'en') {
-      return EMPTY;
+      return IDENTITY;
     }
 
-    return this.enToJa();
+    const map = await this.enToJa();
+
+    return (name) => map.get(name) ?? name;
   }
 
   /** JA → EN canonical. Used by UsersService to normalise on write. */
@@ -64,7 +62,7 @@ export class PokemonNameTranslator {
 
   /**
    * Whether a given string is a known canonical (EN) name. Lets write paths
-   * decide if they should reverse-translate or accept the value as-is.
+   * decide whether to reverse-translate or accept the value as-is.
    */
   async isCanonical(name: string): Promise<boolean> {
     const map = await this.enToJa();

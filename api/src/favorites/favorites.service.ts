@@ -84,21 +84,15 @@ export class FavoritesService {
     response: FavoritesResponse,
     locale: Locale,
   ): Promise<FavoritesResponse> {
-    const jaByName = await this.translator.namesFor(locale);
-
-    if (jaByName.size === 0) {
-      return response;
-    }
+    const localiseName = await this.translator.forLocale(locale);
 
     return {
       ...response,
       favorites: response.favorites.map((entry) => ({
         ...entry,
-        name: jaByName.get(entry.name) ?? entry.name,
+        name: localiseName(entry.name),
       })),
-      chosenFavorite: response.chosenFavorite
-        ? jaByName.get(response.chosenFavorite) ?? response.chosenFavorite
-        : null,
+      chosenFavorite: response.chosenFavorite ? localiseName(response.chosenFavorite) : null,
     };
   }
 }

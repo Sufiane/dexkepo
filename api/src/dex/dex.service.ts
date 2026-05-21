@@ -2,7 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DexEntry } from '@prisma/client';
 import { Manhole, PokemonRef } from '@dexkepo/shared';
 import { Locale } from '../common/locale';
-import { PokemonNameTranslator } from '../pokemon/pokemon-name-translator';
+import {
+  PokemonNameLocaliser,
+  PokemonNameTranslator,
+} from '../pokemon/pokemon-name-translator';
 import { DexDb, DexEntryWithManhole } from './dex.db';
 import { LocalisedDexEntry } from './dex.types';
 
@@ -19,16 +22,16 @@ export class DexService {
    * Localised list for the public API. Internal callers use {@link listRaw}.
    */
   async list(userId: string, locale: Locale = 'en'): Promise<LocalisedDexEntry[]> {
-    const [rows, pokemonNameJa] = await Promise.all([
+    const [rows, localisePokemon] = await Promise.all([
       this.db.findEntriesForUser(userId),
-      this.translator.namesFor(locale),
+      this.translator.forLocale(locale),
     ]);
 
     return rows.map((row) => ({
       userId: row.userId,
       manholeNo: row.manholeNo,
       visitedAt: row.visitedAt,
-      manhole: toLocalisedManhole(row.manhole, locale, pokemonNameJa),
+      manhole: toLocalisedManhole(row.manhole, locale, localisePokemon),
     }));
   }
 
@@ -55,7 +58,7 @@ export class DexService {
 function toLocalisedManhole(
   row: DexEntryWithManhole['manhole'],
   locale: Locale,
-  pokemonNameJa: ReadonlyMap<string, string>,
+  localisePokemon: PokemonNameLocaliser,
 ): Manhole {
   const pokemon = (row.pokemon as unknown as PokemonJson[]) ?? [];
 
@@ -71,7 +74,7 @@ function toLocalisedManhole(
     pictureUrl: row.pictureUrl,
     pokemon: pokemon.map(
       (entry): PokemonRef => ({
-        name: pokemonNameJa.get(entry.name) ?? entry.name,
+        name: localisePokemon(entry.name),
         zukan_url: entry.zukan_url,
       }),
     ),
