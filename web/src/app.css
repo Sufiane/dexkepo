@@ -132,6 +132,24 @@ html.dark, html.dark body {
 .dx-cluster.visited { background: rgba(22, 163, 74, .92); }
 .dx-cluster.unvisited { background: rgba(71, 85, 105, .92); }
 
+/* Cluster rarity halos — mirror the per-marker ring colours.
+   Specificity is intentionally higher than .visited / .unvisited so these
+   always win; background colour is kept from the base variant. */
+.dx-cluster.dx-cluster-legendary {
+  border-color: #f59e0b;
+  box-shadow:
+    0 0 0 3px rgba(245, 158, 11, .35),
+    0 0 12px rgba(245, 158, 11, .55),
+    0 2px 6px rgba(0, 0, 0, .4);
+}
+.dx-cluster.dx-cluster-mythical {
+  border-color: #ec4899;
+  box-shadow:
+    0 0 0 3px rgba(236, 72, 153, .35),
+    0 0 12px rgba(236, 72, 153, .6),
+    0 2px 6px rgba(0, 0, 0, .4);
+}
+
 /* "Just toggled" one-shot pop animation. Applied via a class on the marker
    for ~600ms after the user marks/unmarks, then auto-removed. */
 .dx-marker.dx-pop {

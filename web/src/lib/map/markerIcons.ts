@@ -9,6 +9,25 @@ type MarkerOptions = {
   justToggled?: boolean;
 };
 
+type MarkerExtras = {
+  hasLegendary: boolean;
+  hasMythical: boolean;
+};
+
+/**
+ * WeakMap that tracks rarity flags per Leaflet marker instance.
+ * Keyed on the marker so there is no manual cleanup when markers are removed.
+ */
+const markerExtrasMap = new WeakMap<L.Marker, MarkerExtras>();
+
+/**
+ * Register rarity metadata for a marker so `clusterIcon`'s
+ * `iconCreateFunction` can read it when building cluster bubbles.
+ */
+export function registerMarkerExtras(marker: L.Marker, extras: MarkerExtras): void {
+  markerExtrasMap.set(marker, extras);
+}
+
 /**
  * Marker = circular crop of the first Pokemon's Showdown sprite, framed by
  * a colored ring that signals visited state.
@@ -56,8 +75,35 @@ export function clusterIcon(kind: 'visited' | 'unvisited') {
     const count = cluster.getChildCount();
     const size = count < 10 ? 36 : count < 100 ? 44 : 54;
 
+    let hasLegendary = false;
+    let hasMythical = false;
+
+    for (const marker of cluster.getAllChildMarkers()) {
+      const extras = markerExtrasMap.get(marker as L.Marker);
+
+      if (extras?.hasMythical) {
+        hasMythical = true;
+        break; // Mythical is the highest priority — no need to scan further.
+      }
+
+      if (extras?.hasLegendary) {
+        hasLegendary = true;
+      }
+    }
+
+    // Mythical wins the styling fight (rarer than legendary in canon).
+    let rarityClass = '';
+
+    if (hasMythical) {
+      rarityClass = 'dx-cluster-mythical';
+    } else if (hasLegendary) {
+      rarityClass = 'dx-cluster-legendary';
+    }
+
+    const classes = ['dx-cluster', kind, rarityClass].filter(Boolean).join(' ');
+
     return L.divIcon({
-      html: `<div class="dx-cluster ${kind}" style="width:${size}px;height:${size}px;">${count}</div>`,
+      html: `<div class="${classes}" style="width:${size}px;height:${size}px;">${count}</div>`,
       className: '',
       iconSize: [size, size],
     });

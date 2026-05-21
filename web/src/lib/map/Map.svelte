@@ -3,7 +3,7 @@
   import L from 'leaflet';
   import 'leaflet.markercluster';
   import type { ManholeSummary } from '@dexkepo/shared';
-  import { buildMarkerIcon, clusterIcon } from './markerIcons';
+  import { buildMarkerIcon, clusterIcon, registerMarkerExtras } from './markerIcons';
   import { theme } from '../stores/theme';
 
   /**
@@ -115,6 +115,11 @@
           hasMythical: manhole.hasMythical,
           justToggled: manhole.manholeNo === justToggledNo,
         }),
+      });
+
+      registerMarkerExtras(marker, {
+        hasLegendary: manhole.hasLegendary,
+        hasMythical: manhole.hasMythical,
       });
 
       marker.on('click', () => onSelect(manhole));
