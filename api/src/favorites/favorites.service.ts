@@ -63,14 +63,15 @@ export class FavoritesService {
           ratio: visitedCount / totalCount,
         };
       })
-      // Highest ratio first; absolute count as tiebreaker so a single-cover
-      // 100% never beats a multi-cover 100% — the latter took more effort.
+      // Most-captured Pokémon win. Ratio is just the tiebreaker so that
+      // when counts are equal, the user who completed the species fully
+      // ranks above one who hasn't.
       .sort((a, b) => {
-        if (b.ratio !== a.ratio) {
-          return b.ratio - a.ratio;
+        if (b.visitedCount !== a.visitedCount) {
+          return b.visitedCount - a.visitedCount;
         }
 
-        return b.visitedCount - a.visitedCount;
+        return b.ratio - a.ratio;
       })
       .slice(0, TOP_N);
 
