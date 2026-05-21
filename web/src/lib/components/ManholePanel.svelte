@@ -225,22 +225,31 @@
     </p>
   {/if}
 
-  <a
-    href={gmapsHref}
-    target="_blank"
-    rel="noopener noreferrer"
-    class="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:border-rose-300 hover:text-rose-600"
-  >
-    <!-- Tiny pin glyph; the external-link arrow signals "opens in a new tab" -->
-    <svg viewBox="0 0 20 20" class="h-4 w-4" fill="currentColor" aria-hidden="true">
-      <path fill-rule="evenodd" d="M10 18s7-6.343 7-11A7 7 0 003 7c0 4.657 7 11 7 11zm0-8a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
-    </svg>
-    {$t('manholePanel.openGmaps')}
-    <svg viewBox="0 0 20 20" class="h-3 w-3" fill="currentColor" aria-hidden="true">
-      <path d="M11 3a1 1 0 100 2h2.586L7.293 11.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-      <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-    </svg>
-  </a>
+  <div class="mt-3 flex flex-wrap gap-2">
+    <a
+      href={gmapsHref}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:border-rose-300 hover:text-rose-600"
+    >
+      <!-- Tiny pin glyph; the external-link arrow signals "opens in a new tab" -->
+      <svg viewBox="0 0 20 20" class="h-4 w-4" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M10 18s7-6.343 7-11A7 7 0 003 7c0 4.657 7 11 7 11zm0-8a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+      </svg>
+      {$t('manholePanel.openGmaps')}
+      <svg viewBox="0 0 20 20" class="h-3 w-3" fill="currentColor" aria-hidden="true">
+        <path d="M11 3a1 1 0 100 2h2.586L7.293 11.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+        <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+      </svg>
+    </a>
+
+    <a
+      href={`/prefecture/${prefEnName.toLowerCase()}`}
+      class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-500 shadow-sm hover:border-slate-300 hover:text-slate-700"
+    >
+      {$t('manholePanel.viewPrefecture', { prefName: displayPref })}
+    </a>
+  </div>
 
   <div class="mt-5">
     {#if $auth}

@@ -16,7 +16,7 @@
 
   const manholesQ = createQuery<ManholeSummary[]>({
     queryKey: ['manholes'],
-    queryFn: listManholes,
+    queryFn: () => listManholes(),
   });
 
   const dexQ = createQuery({

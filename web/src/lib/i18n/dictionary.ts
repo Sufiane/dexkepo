@@ -94,6 +94,15 @@ export const en = {
     closeImage: 'Close image',
     legendary: 'Legendary',
     mythical: 'Mythical',
+    viewPrefecture: 'View all in {prefName}',
+  },
+  prefecture: {
+    kicker: 'Prefecture',
+    coverSingular: 'cover',
+    coverPlural: 'covers',
+    visitedRatio: '{visited} / {total}',
+    emptyTitle: 'No covers here',
+    emptySub: "Either the slug is wrong, or this prefecture isn't part of the project yet.",
   },
   auth: {
     login: {
@@ -283,6 +292,15 @@ export const ja: Dictionary = {
     closeImage: '画像を閉じる',
     legendary: '伝説',
     mythical: '幻',
+    viewPrefecture: '{prefName}のすべてを見る',
+  },
+  prefecture: {
+    kicker: '都道府県',
+    coverSingular: '枚のマンホール',
+    coverPlural: '枚のマンホール',
+    visitedRatio: '{visited} / {total}',
+    emptyTitle: 'マンホールはありません',
+    emptySub: 'スラッグが間違っているか、まだこの都道府県は対象外です。',
   },
   auth: {
     login: {

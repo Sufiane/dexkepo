@@ -31,7 +31,7 @@
   });
   const manholesQ = createQuery({
     queryKey: ['manholes'],
-    queryFn: listManholes,
+    queryFn: () => listManholes(),
   });
   const achievementsQ = createQuery({
     queryKey: ['achievements'],
