@@ -8,8 +8,6 @@ import { LocalisedDexEntry } from './dex.types';
 
 type PokemonJson = { name: string; zukan_url: string };
 
-const EMPTY_MAP: Map<string, string> = new Map();
-
 @Injectable()
 export class DexService {
   constructor(
@@ -23,7 +21,7 @@ export class DexService {
   async list(userId: string, locale: Locale = 'en'): Promise<LocalisedDexEntry[]> {
     const [rows, pokemonNameJa] = await Promise.all([
       this.db.findEntriesForUser(userId),
-      locale === 'ja' ? this.translator.enToJa() : Promise.resolve(EMPTY_MAP),
+      this.translator.namesFor(locale),
     ]);
 
     return rows.map((row) => ({
@@ -57,7 +55,7 @@ export class DexService {
 function toLocalisedManhole(
   row: DexEntryWithManhole['manhole'],
   locale: Locale,
-  pokemonNameJa: Map<string, string>,
+  pokemonNameJa: ReadonlyMap<string, string>,
 ): Manhole {
   const pokemon = (row.pokemon as unknown as PokemonJson[]) ?? [];
 

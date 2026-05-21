@@ -84,11 +84,11 @@ export class FavoritesService {
     response: FavoritesResponse,
     locale: Locale,
   ): Promise<FavoritesResponse> {
-    if (locale === 'en') {
+    const jaByName = await this.translator.namesFor(locale);
+
+    if (jaByName.size === 0) {
       return response;
     }
-
-    const jaByName = await this.translator.enToJa();
 
     return {
       ...response,
