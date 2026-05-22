@@ -18,7 +18,12 @@
       role="status"
       aria-live="polite"
     >
-      <span class="flex-1">{toast.message}</span>
+      <span class="flex-1">
+        {toast.message}
+        {#if toast.countdownSeconds && toast.countdownSeconds > 0}
+          <span class="ml-1 font-mono tabular-nums opacity-90">{toast.countdownSeconds}s</span>
+        {/if}
+      </span>
       {#if toast.action}
         <button
           type="button"

@@ -1,6 +1,7 @@
 import { get } from 'svelte/store';
 import { auth, logout } from '../stores/auth';
-import { locale } from '../i18n/locale';
+import { locale, t } from '../i18n/locale';
+import { showToast } from '../stores/toasts';
 
 const BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:7777';
 
@@ -28,6 +29,17 @@ export async function api<T>(
   const res = await fetch(BASE + path, { ...init, headers });
   if (res.status === 401 && init.auth) {
     logout();
+  }
+  if (res.status === 429) {
+    const retryAfter = Number(res.headers.get('Retry-After')) || 60;
+    const translate = get(t);
+
+    showToast({
+      message: translate('error.rateLimit'),
+      variant: 'warning',
+      countdownSeconds: retryAfter,
+      duration: 0,
+    });
   }
   if (!res.ok) {
     let msg = res.statusText;

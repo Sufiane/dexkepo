@@ -67,6 +67,7 @@ export const en = {
     headlineCrash: 'Critical hit!',
     sub404: "Wild {mascot} blocks your path. There's nothing on this route.",
     run: '← Run',
+    rateLimit: 'Whoa, slow down! Try again in',
   },
   filter: {
     progress: 'Progress',
@@ -274,6 +275,7 @@ export const ja: Dictionary = {
     headlineCrash: 'きゅうしょに あたった！',
     sub404: '野生の{mascot}が立ちふさがる。このルートには何もない。',
     run: '← にげる',
+    rateLimit: '操作が早すぎます！次の試行まで',
   },
   filter: {
     progress: '進捗',
