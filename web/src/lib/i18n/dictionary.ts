@@ -17,6 +17,7 @@ export const en = {
     copy: 'Copy link',
     copied: 'Copied!',
     close: 'Close',
+    undo: 'Undo',
   },
   header: {
     tagline: 'Pokémon manhole-cover dex',
@@ -101,6 +102,8 @@ export const en = {
     legendary: 'Legendary',
     mythical: 'Mythical',
     viewPrefecture: 'View all in {prefName}',
+    undoToast: 'Unmarked {name}.',
+    reMarked: 'Re-marked {name}.',
   },
   prefecture: {
     kicker: 'Prefecture',
@@ -221,6 +224,7 @@ export const ja: Dictionary = {
     copy: 'リンクをコピー',
     copied: 'コピーしました！',
     close: '閉じる',
+    undo: '元に戻す',
   },
   header: {
     tagline: 'ポケモンマンホール図鑑',
@@ -305,6 +309,8 @@ export const ja: Dictionary = {
     legendary: '伝説',
     mythical: '幻',
     viewPrefecture: '{prefName}のすべてを見る',
+    undoToast: '{name}の訪問を取り消しました。',
+    reMarked: '{name}を再度訪問済みにしました。',
   },
   prefecture: {
     kicker: '都道府県',

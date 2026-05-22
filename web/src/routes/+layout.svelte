@@ -7,6 +7,7 @@
   import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
   import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
   import Header from '$lib/components/Header.svelte';
+  import Toasts from '$lib/components/Toasts.svelte';
   import { locale } from '$lib/i18n/locale';
 
   const client = new QueryClient({
@@ -35,4 +36,5 @@
       {@render children?.()}
     </main>
   </div>
+  <Toasts />
 </QueryClientProvider>

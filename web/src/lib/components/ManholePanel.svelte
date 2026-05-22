@@ -7,6 +7,7 @@
   import { spriteUrl } from '../utils/pokemonSprite';
   import { t, locale } from '$lib/i18n/locale';
   import { localisedPrefecture } from '$lib/i18n/prefectures';
+  import { showToast } from '$lib/stores/toasts';
 
   const PIC_BASE = 'https://local.pokemon.jp';
 
@@ -81,6 +82,22 @@
     });
   }
 
+  async function reMark(no: string): Promise<void> {
+    try {
+      await markVisited(no);
+      onToggle();
+      showToast({
+        message: $t('manholePanel.reMarked', { name: displayName }),
+        variant: 'success',
+      });
+    } catch (err) {
+      showToast({
+        message: (err as Error).message,
+        variant: 'error',
+      });
+    }
+  }
+
   async function toggle(): Promise<void> {
     if (!$auth) {
       return;
@@ -92,12 +109,27 @@
     try {
       if (visited) {
         await unmarkVisited(manholeNo);
+        onToggle();
+        // 5s undo window — covers the classic "oh no, mis-tap" case.
+        const no = manholeNo;
+        const label = displayName;
+
+        showToast({
+          message: $t('manholePanel.undoToast', { name: label }),
+          variant: 'info',
+          duration: 5000,
+          action: {
+            label: $t('common.undo'),
+            onClick: () => {
+              void reMark(no);
+            },
+          },
+        });
       } else {
         await markVisited(manholeNo);
         fireConfetti();
+        onToggle();
       }
-
-      onToggle();
     } catch (err) {
       error = (err as Error).message;
     } finally {
