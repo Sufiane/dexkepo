@@ -5,6 +5,8 @@
   import type { ManholeSummary } from '@dexkepo/shared';
   import { buildMarkerIcon, clusterIcon, registerMarkerExtras } from './markerIcons';
   import { theme } from '../stores/theme';
+  import { localisedPrefecture } from '../i18n/prefectures';
+  import { locale } from '../i18n/locale';
 
   /**
    * CartoCDN basemaps — free, no API key required for normal use, Latin labels
@@ -126,6 +128,21 @@
       });
 
       marker.on('click', () => onSelect(manhole));
+
+      // Desktop hover tooltip. Leaflet only fires `mouseover` events on
+      // pointer devices, so mobile users see nothing extra — exactly what we
+      // want. Sticky=false → tooltip follows the marker, not the cursor.
+      const prefDisplay = localisedPrefecture(manhole.prefEnName, $locale);
+
+      marker.bindTooltip(
+        `<strong>#${manhole.manholeNo}</strong> · ${manhole.name}<br><span class="opacity-75">${prefDisplay}</span>`,
+        {
+          direction: 'top',
+          offset: [0, -16],
+          opacity: 0.95,
+          className: 'dx-tooltip',
+        },
+      );
 
       if (visited) {
         visitedLayer.addLayer(marker);

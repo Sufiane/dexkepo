@@ -150,6 +150,27 @@ html.dark, html.dark body {
     0 2px 6px rgba(0, 0, 0, .4);
 }
 
+/* Desktop hover tooltip on map markers. Override Leaflet's default
+   tooltip to match the brand. Mobile never fires mouseover so it's a
+   no-op there. */
+.leaflet-tooltip.dx-tooltip {
+  background: #0f172a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .35);
+  white-space: nowrap;
+}
+.leaflet-tooltip.dx-tooltip strong {
+  font-weight: 700;
+}
+.leaflet-tooltip.dx-tooltip::before {
+  border-top-color: #0f172a;
+}
+
 /* "Just toggled" one-shot pop animation. Applied via a class on the marker
    for ~600ms after the user marks/unmarks, then auto-removed. */
 .dx-marker.dx-pop {
