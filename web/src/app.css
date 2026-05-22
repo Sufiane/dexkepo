@@ -118,6 +118,50 @@ html.dark, html.dark body {
   background: #16a34a;
 }
 
+/* Rarity glyph: distinct shape (★ legendary, ✦ mythical) so colour-blind
+   users still get the signal. Sits top-left on individual markers, top-right
+   on cluster bubbles. */
+.dx-marker .dx-rarity {
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 900;
+  border: 2px solid #fff;
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .35);
+  box-sizing: content-box;
+  pointer-events: none;
+}
+.dx-rarity-legendary { background: #f59e0b; }
+.dx-rarity-mythical  { background: #ec4899; }
+
+.dx-cluster .dx-rarity {
+  position: absolute;
+  right: -6px;
+  top: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 900;
+  border: 2px solid #fff;
+  color: #fff;
+}
+.dx-cluster {
+  position: relative;
+}
+
 .dx-cluster {
   background: rgba(15, 23, 42, .9);
   color: #fff;

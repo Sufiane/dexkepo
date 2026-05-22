@@ -57,12 +57,23 @@ export function buildMarkerIcon(options: MarkerOptions): L.DivIcon {
   const spriteAlt = first ?? 'manhole';
   const badge = extra > 0 ? `<span class="dx-badge">+${extra}</span>` : '';
 
+  // Rarity glyph: star for legendary, sparkle for mythical. Distinct shape
+  // (not just colour) keeps the signal readable for color-blind users.
+  let rarityGlyph = '';
+
+  if (options.hasMythical) {
+    rarityGlyph = '<span class="dx-rarity dx-rarity-mythical" aria-label="Mythical">✦</span>';
+  } else if (options.hasLegendary) {
+    rarityGlyph = '<span class="dx-rarity dx-rarity-legendary" aria-label="Legendary">★</span>';
+  }
+
   return L.divIcon({
     className: '',
     html: `
       <div class="dx-marker ${ringClass} ${popClass}">
         <img class="dx-sprite" src="${spriteSrc}" alt="${spriteAlt}" loading="lazy" />
         ${badge}
+        ${rarityGlyph}
       </div>
     `,
     iconSize: [40, 40],
@@ -93,17 +104,20 @@ export function clusterIcon(kind: 'visited' | 'unvisited') {
 
     // Mythical wins the styling fight (rarer than legendary in canon).
     let rarityClass = '';
+    let rarityGlyph = '';
 
     if (hasMythical) {
       rarityClass = 'dx-cluster-mythical';
+      rarityGlyph = '<span class="dx-rarity dx-rarity-mythical">✦</span>';
     } else if (hasLegendary) {
       rarityClass = 'dx-cluster-legendary';
+      rarityGlyph = '<span class="dx-rarity dx-rarity-legendary">★</span>';
     }
 
     const classes = ['dx-cluster', kind, rarityClass].filter(Boolean).join(' ');
 
     return L.divIcon({
-      html: `<div class="${classes}" style="width:${size}px;height:${size}px;">${count}</div>`,
+      html: `<div class="${classes}" style="width:${size}px;height:${size}px;">${count}${rarityGlyph}</div>`,
       className: '',
       iconSize: [size, size],
     });
