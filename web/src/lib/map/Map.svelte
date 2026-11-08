@@ -9,15 +9,14 @@
   import { locale } from '../i18n/locale';
 
   /**
-   * CartoCDN basemaps — free, no API key required for normal use, Latin labels
-   * everywhere (no more Japanese-only street names). Voyager for light theme,
-   * dark_all for dark. Standard OSM attribution still required since the tiles
-   * derive from OSM data.
+   * CartoCDN basemaps — Latin labels everywhere. Voyager for light theme,
+   * dark_all for dark. Requires a free API key (VITE_CARTO_API_KEY) passed as
+   * `?key=`. Standard OSM attribution still required.
    */
-  const LIGHT_TILE_URL =
-    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-  const DARK_TILE_URL =
-    'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+  const CARTO_API_KEY = import.meta.env.VITE_CARTO_API_KEY ?? '';
+  const KEY_QUERY = `?key=${encodeURIComponent(CARTO_API_KEY)}`;
+  const LIGHT_TILE_URL = `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png${KEY_QUERY}`;
+  const DARK_TILE_URL = `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png${KEY_QUERY}`;
   const TILE_ATTRIBUTION =
     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
